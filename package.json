@@ -1,0 +1,34 @@
+{
+  "name": "freemobnotifier",
+  "version": "1.0.0",
+  "description": "A web application for sending SMS notifications through the Free Mobile API",
+  "main": "src/server/index.js",
+  "scripts": {
+    "start": "node src/server/index.js",
+    "dev": "nodemon src/server/index.js",
+    "client": "cd src/client && npm run dev",
+    "client:build": "cd src/client && npm run build",
+    "dev:all": "concurrently \"npm run dev\" \"npm run client\"",
+    "install:all": "npm install && cd src/client && npm install",
+    "build": "npm run client:build",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "dependencies": {
+    "@vuepic/vue-datepicker": "^11.0.2",
+    "axios": "^1.9.0",
+    "cors": "^2.8.5",
+    "dotenv": "^16.5.0",
+    "express": "^4.18.2",
+    "nedb": "^1.8.0",
+    "node-cron": "^4.1.0"
+  },
+  "devDependencies": {
+    "concurrently": "^8.2.0",
+    "nodemon": "^3.1.10"
+  },
+  "engines": {
+    "node": ">=14.0.0"
+  },
+  "author": "",
+  "license": "MIT"
+}
