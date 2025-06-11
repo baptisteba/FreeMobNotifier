@@ -144,6 +144,7 @@ export default {
     const isSaving = ref(false);
     const isTesting = ref(false);
     const showApiKey = ref(false);
+    const isApiKeyPlaceholder = ref(false);
     const lastUpdated = ref(null);
     const successMessage = ref('');
     const errorMessage = ref('');
@@ -168,13 +169,21 @@ export default {
     };
     
     // Load settings
-    const loadSettings = async () => {
+          const loadSettings = async () => {
       try {
         isLoading.value = true;
         const response = await axios.get('/api/settings');
         
         settings.userId = response.data.userId || '';
         // API key is not returned for security reasons
+        // If API key exists, set a placeholder value
+        if (response.data.hasApiKey) {
+          settings.apiKey = '••••••••••••••••••••••';
+          isApiKeyPlaceholder.value = true;
+        } else {
+          settings.apiKey = '';
+          isApiKeyPlaceholder.value = false;
+        }
         lastUpdated.value = response.data.updatedAt;
       } catch (error) {
         console.error('Error loading settings:', error);
@@ -211,10 +220,23 @@ export default {
       try {
         isSaving.value = true;
         
-        const response = await axios.put('/api/settings', {
-          userId: settings.userId,
-          apiKey: settings.apiKey
-        });
+        // Only send API key if it's not a placeholder (i.e., user has entered a new one)
+        const dataToSend = {
+          userId: settings.userId
+        };
+        
+        // If the API key is not a placeholder or empty, include it in the request
+        if (!isApiKeyPlaceholder.value) {
+          dataToSend.apiKey = settings.apiKey;
+        }
+        
+        const response = await axios.put('/api/settings', dataToSend);
+        
+        // Update UI with placeholder for API key if it was saved
+        if (response.data.hasApiKey) {
+          settings.apiKey = '••••••••••••••••••••••';
+          isApiKeyPlaceholder.value = true;
+        }
         
         lastUpdated.value = response.data.updatedAt;
         successMessage.value = 'Paramètres enregistrés avec succès !';
@@ -266,6 +288,7 @@ export default {
       isSaving,
       isTesting,
       showApiKey,
+      isApiKeyPlaceholder,
       lastUpdated,
       successMessage,
       errorMessage,
