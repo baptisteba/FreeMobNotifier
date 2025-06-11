@@ -46,7 +46,7 @@ FreeMobNotifier connects to the Free Mobile SMS notification API, which allows F
 1. Clone the repository:
    ```bash
    git clone https://github.com/baptisteba/FreeMobNotifier.git
-   cd freemobnotifier
+   cd FreeMobNotifier
    ```
 
 2. Install dependencies:
