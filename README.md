@@ -111,8 +111,8 @@ This approach makes the application much easier to set up and run without extern
 
 1. Clone the repository:
    ```bash
-   git clone https://github.com/yourusername/freemobnotifier.git
-   cd freemobnotifier
+   git clone https://github.com/baptisteba/FreeMobNotifier.git
+   cd FreeMobNotifier
    ```
 
 2. Build and start the containers:
