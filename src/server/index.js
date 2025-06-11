@@ -16,7 +16,7 @@ const PORT = process.env.PORT || 3000;
 app.use(cors());
 app.use(express.json());
 
-console.log('Starting FreeMobNotifier with local database (NeDB)');
+console.log('Starting FreeMobNotifier with local database (@seald-io/nedb)');
 console.log('Database files will be stored in the ./data directory');
 
 // API Routes

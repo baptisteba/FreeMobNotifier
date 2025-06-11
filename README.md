@@ -98,7 +98,7 @@ If you encounter issues during installation or startup:
 
 ## 💾 Database
 
-The application uses NeDB, a lightweight file-based database that is fully compatible with the MongoDB API but doesn't require a separate database server. All data is stored in the `./data` directory in the following files:
+The application uses @seald-io/nedb, a lightweight file-based database that is fully compatible with the MongoDB API but doesn't require a separate database server. All data is stored in the `./data` directory in the following files:
 
 - `settings.db`: Stores the Free Mobile API credentials
 - `messages.db`: Stores all messages (immediate, scheduled, and recurring)

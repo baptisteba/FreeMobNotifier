@@ -1,4 +1,4 @@
-const Datastore = require('nedb');
+const Datastore = require('@seald-io/nedb');
 const path = require('path');
 const fs = require('fs');
 
@@ -22,7 +22,7 @@ db.messages.ensureIndex({ fieldName: 'createdAt' });
 db.messages.ensureIndex({ fieldName: 'sendAt' });
 
 /**
- * Database service to wrap NeDB operations with promises
+ * Database service to wrap @seald-io/nedb operations with promises
  */
 const dbService = {
   // Settings operations

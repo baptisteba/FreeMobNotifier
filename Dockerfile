@@ -15,7 +15,7 @@ COPY . .
 # Build client
 RUN npm run build
 
-# Create data directory for NeDB
+# Create data directory for @seald-io/nedb
 RUN mkdir -p /app/data
 
 # Set permissions for data directory
