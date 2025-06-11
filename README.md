@@ -120,7 +120,7 @@ This approach makes the application much easier to set up and run without extern
    docker-compose up -d
    ```
 
-3. Access the application at http://localhost:3000
+3. Access the application at http://localhost:18596
 
 ### Manual Docker Build
 
@@ -133,10 +133,23 @@ If you prefer to build and run the Docker container manually:
 
 2. Run the container:
    ```bash
-   docker run -d -p 3000:3000 -v $(pwd)/data:/app/data --name freemobnotifier freemobnotifier
+   docker run -d -p 18596:3000 -v $(pwd)/data:/app/data --name freemobnotifier freemobnotifier
    ```
 
-3. Access the application at http://localhost:3000
+3. Access the application at http://localhost:18596
+
+### Port Configuration
+
+The application is configured to expose the UI on port **18596** externally, while internally the container runs on port 3000. This means:
+
+- **External Access**: http://localhost:18596 (UI and API both accessible)
+- **Internal Container**: Port 3000 (handles both UI and API requests)
+
+**Important**: You do **NOT** need to expose the API port separately because the Express server serves both:
+- **Static UI files** (Vue.js production build)
+- **API endpoints** (under `/api/*` routes)
+
+Both are accessible through the same port (18596 externally, 3000 internally).
 
 ### Docker Volume and Persistence
 
@@ -144,13 +157,19 @@ The application data is stored in a Docker volume that persists across container
 
 ```bash
 # To view logs
-docker logs -f freemobnotifier
+docker-compose logs -f freemobnotifier
+# Or with manual Docker:
+# docker logs -f freemobnotifier-app
 
 # To restart the container
-docker restart freemobnotifier
+docker-compose restart freemobnotifier
+# Or with manual Docker:
+# docker restart freemobnotifier-app
 
 # To stop the container
-docker stop freemobnotifier
+docker-compose down
+# Or with manual Docker:
+# docker stop freemobnotifier-app
 ```
 
 ## ⚙️ Configuration

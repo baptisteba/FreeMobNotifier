@@ -1,16 +1,19 @@
-version: '3'
-
 services:
-  app:
+  freemobnotifier:
     build: .
+    container_name: freemobnotifier-app
     ports:
-      - "3000:3000"
+      - "18596:3000"  # External port 18596 maps to internal port 3000
     environment:
       - NODE_ENV=production
       - PORT=3000
     volumes:
-      - ./data:/app/data
+      - ./data:/app/data:rw
     restart: unless-stopped
-
-volumes:
-  mongodb_data: 
+    healthcheck:
+      test: ["CMD", "node", "-e", "require('http').get('http://localhost:3000/api/settings', (res) => process.exit(res.statusCode === 200 ? 0 : 1)).on('error', () => process.exit(1))"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+    
