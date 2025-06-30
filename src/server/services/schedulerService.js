@@ -78,14 +78,32 @@ const processScheduledMessages = async () => {
         const result = await freeMobileService.sendSMS(message.content);
         
         if (result.success) {
-          // Update message status
-          message.status = 'sent';
-          message.lastSent = now;
-          message.error = null;
-          
-          // For recurring messages, set status back to pending for next time
           if (message.recurrence !== 'none') {
-            message.status = 'pending';
+            // For recurring messages, create a separate history entry for each sent message
+            const sentMessageHistory = new Message({
+              content: message.content,
+              sendAt: null, // History entries don't need sendAt
+              recurrence: 'none', // History entries are not recurring
+              recurrenceConfig: {},
+              status: 'sent',
+              lastSent: now,
+              error: null,
+              createdAt: now, // Use current time for proper ordering in history
+              updatedAt: now,
+              // Add reference to original recurring message for potential tracking
+              originalRecurringMessageId: message._id
+            });
+            await sentMessageHistory.save();
+            
+            // Update the recurring message to track last sent time but keep it pending
+            message.lastSent = now;
+            message.error = null;
+            // Keep status as 'pending' for next occurrence
+          } else {
+            // For one-time messages, update the original message
+            message.status = 'sent';
+            message.lastSent = now;
+            message.error = null;
           }
         } else {
           message.status = 'failed';

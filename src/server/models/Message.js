@@ -12,6 +12,7 @@ class Message {
     this.status = data.status || 'pending';
     this.lastSent = data.lastSent || null;
     this.error = data.error || null;
+    this.originalRecurringMessageId = data.originalRecurringMessageId || null;
     this.createdAt = data.createdAt || new Date();
     this.updatedAt = data.updatedAt || new Date();
     this._id = data._id || null;
@@ -91,6 +92,7 @@ class Message {
             status: this.status,
             lastSent: this.lastSent,
             error: this.error,
+            originalRecurringMessageId: this.originalRecurringMessageId,
             updatedAt: this.updatedAt
           }
         };
@@ -106,13 +108,21 @@ class Message {
           recurrenceConfig: this.recurrenceConfig,
           status: this.status,
           lastSent: this.lastSent,
-          error: this.error
+          error: this.error,
+          originalRecurringMessageId: this.originalRecurringMessageId,
+          createdAt: this.createdAt,
+          updatedAt: this.updatedAt
         };
         
         const newMessage = await db.messages.insert(data);
         this._id = newMessage._id;
-        this.createdAt = newMessage.createdAt;
-        this.updatedAt = newMessage.updatedAt;
+        // Only update timestamps if they weren't explicitly provided
+        if (!data.createdAt) {
+          this.createdAt = newMessage.createdAt;
+        }
+        if (!data.updatedAt) {
+          this.updatedAt = newMessage.updatedAt;
+        }
         return this;
       }
     } catch (error) {

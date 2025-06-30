@@ -65,8 +65,16 @@ const dbService = {
   messages: {
     find: (query = {}) => {
       return new Promise((resolve, reject) => {
-        db.messages.find(query).sort({ createdAt: -1 }).exec((err, docs) => {
+        db.messages.find(query, (err, docs) => {
           if (err) return reject(err);
+          
+          // Sort messages by actual send time (lastSent) or creation time, newest first
+          docs.sort((a, b) => {
+            const timeA = a.lastSent || a.createdAt;
+            const timeB = b.lastSent || b.createdAt;
+            return new Date(timeB) - new Date(timeA);
+          });
+          
           resolve(docs);
         });
       });
@@ -91,8 +99,13 @@ const dbService = {
     },
     
     insert: (doc) => {
-      doc.createdAt = new Date();
-      doc.updatedAt = new Date();
+      // Only set timestamps if they weren't explicitly provided
+      if (!doc.createdAt) {
+        doc.createdAt = new Date();
+      }
+      if (!doc.updatedAt) {
+        doc.updatedAt = new Date();
+      }
       
       return new Promise((resolve, reject) => {
         db.messages.insert(doc, (err, newDoc) => {
