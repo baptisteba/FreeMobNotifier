@@ -1,7 +1,7 @@
 <template>
   <nav class="navbar">
     <div class="navbar-container">
-      <router-link to="/" class="navbar-logo">
+      <router-link to="/" class="navbar-logo desktop-only">
         <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="logo-icon">
           <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"></path>
         </svg>
@@ -22,6 +22,14 @@
             <polyline points="22 12 18 12 15 21 9 3 6 12 2 12"></polyline>
           </svg>
           <span class="nav-text">Historique</span>
+        </router-link>
+        
+        <router-link to="/scheduled" class="nav-item" title="Messages programmés" active-class="active">
+          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="nav-icon">
+            <circle cx="12" cy="12" r="10"></circle>
+            <polyline points="12 6 12 12 16 14"></polyline>
+          </svg>
+          <span class="nav-text">Programmés</span>
         </router-link>
         
         <router-link to="/settings" class="nav-item" title="Paramètres" active-class="active">
@@ -51,7 +59,7 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 0 20px;
+  padding: 0 12px;
   height: 60px;
   max-width: 1200px;
   margin: 0 auto;
@@ -63,11 +71,13 @@
   text-decoration: none;
   color: var(--free-primary-color, #E1000F);
   font-weight: bold;
-  font-size: 1.2rem;
+  font-size: 1.1rem;
+  flex-shrink: 0;
 }
 
 .logo-icon {
   color: var(--free-primary-color, #E1000F);
+  flex-shrink: 0;
 }
 
 .logo-text {
@@ -77,18 +87,23 @@
 .navbar-actions {
   display: flex;
   align-items: center;
-  gap: 10px;
+  gap: 8px;
+  flex: 1;
+  justify-content: flex-end;
+  min-width: 0;
 }
 
 .nav-item {
   display: flex;
   flex-direction: column;
   align-items: center;
-  padding: 8px 12px;
+  padding: 6px 8px;
   color: #666;
   text-decoration: none;
   border-radius: 8px;
   transition: all 0.2s;
+  flex-shrink: 0;
+  min-width: 0;
 }
 
 .nav-item:hover {
@@ -101,13 +116,102 @@
 }
 
 .nav-icon {
-  width: 24px;
-  height: 24px;
+  width: 20px;
+  height: 20px;
+  flex-shrink: 0;
 }
 
 .nav-text {
-  font-size: 0.7rem;
-  margin-top: 4px;
+  font-size: 0.65rem;
+  margin-top: 2px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* Hide desktop elements on mobile */
+@media (max-width: 767px) {
+  .desktop-only {
+    display: none;
+  }
+  
+  .navbar-actions {
+    flex: 1;
+    justify-content: space-around;
+    width: 100%;
+  }
+}
+
+/* Very small mobile devices */
+@media (max-width: 360px) {
+  .navbar-container {
+    padding: 0 8px;
+    justify-content: center;
+  }
+  
+  .navbar-actions {
+    gap: 4px;
+    justify-content: space-around;
+    flex: 1;
+    width: 100%;
+  }
+  
+  .nav-item {
+    padding: 4px 6px;
+    flex: 1;
+    max-width: none;
+  }
+  
+  .nav-icon {
+    width: 18px;
+    height: 18px;
+  }
+  
+  .nav-text {
+    font-size: 0.6rem;
+    margin-top: 1px;
+  }
+}
+
+/* Small mobile devices */
+@media (max-width: 480px) and (min-width: 361px) {
+  .navbar-container {
+    padding: 0 10px;
+    justify-content: center;
+  }
+  
+  .navbar-actions {
+    gap: 6px;
+    flex: 1;
+    justify-content: space-around;
+    width: 100%;
+  }
+  
+  .nav-item {
+    padding: 5px 7px;
+  }
+  
+  .nav-text {
+    font-size: 0.62rem;
+  }
+}
+
+/* Medium mobile devices */
+@media (max-width: 767px) and (min-width: 481px) {
+  .navbar-container {
+    justify-content: center;
+  }
+  
+  .navbar-actions {
+    gap: 10px;
+    flex: 1;
+    justify-content: space-around;
+    width: 100%;
+  }
+  
+  .nav-item {
+    padding: 8px 10px;
+  }
 }
 
 /* Desktop styles */
@@ -120,10 +224,12 @@
   
   .navbar-container {
     height: 100%;
+    padding: 0 20px;
   }
   
   .navbar-actions {
     gap: 15px;
+    justify-content: flex-end;
   }
   
   .nav-item {
@@ -141,6 +247,11 @@
   .nav-icon {
     width: 20px;
     height: 20px;
+  }
+  
+  .logo-text {
+    display: inline;
+    margin-left: 8px;
   }
 }
 </style> 

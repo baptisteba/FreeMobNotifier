@@ -1,12 +1,14 @@
 <template>
   <div class="home-container">
-    <h1 class="page-title">
-      <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="page-icon">
-        <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
-        <polyline points="9 22 9 12 15 12 15 22"></polyline>
-      </svg>
-      Accueil
-    </h1>
+    <div class="app-header">
+      <h1 class="app-title">
+        <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="app-icon">
+          <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"></path>
+        </svg>
+        FreeMobNotifier
+      </h1>
+      <p class="app-subtitle">Envoyez vos SMS via Free Mobile</p>
+    </div>
 
     <div class="card">
       <!-- Tab Navigation -->
@@ -420,19 +422,35 @@ export default {
   overflow: visible;
 }
 
-.page-title {
-  display: flex;
-  align-items: center;
-  font-size: 1.8rem;
-  margin-bottom: 20px;
-  color: var(--free-primary-color, #E1000F);
-  font-weight: 600;
+.app-header {
+  text-align: center;
+  margin-bottom: 30px;
+  padding: 20px 0;
 }
 
-.page-icon {
-  margin-right: 10px;
-  width: 24px;
-  height: 24px;
+.app-title {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 2rem;
+  margin-bottom: 8px;
+  color: var(--free-primary-color, #E1000F);
+  font-weight: 700;
+  gap: 12px;
+}
+
+.app-icon {
+  color: var(--free-primary-color, #E1000F);
+  flex-shrink: 0;
+  width: 32px;
+  height: 32px;
+}
+
+.app-subtitle {
+  color: #666;
+  font-size: 1rem;
+  margin: 0;
+  font-weight: 400;
 }
 
 .card {
@@ -695,7 +713,223 @@ textarea.form-control {
   margin-top: 20px;
 }
 
-/* Mobile Responsive */
+/* Mobile Responsive - Enhanced for all screen sizes */
+
+/* Very small mobile devices (≤360px) */
+@media (max-width: 360px) {
+  .home-container {
+    padding: 12px 8px;
+  }
+
+  .app-header {
+    margin-bottom: 20px;
+    padding: 15px 0;
+  }
+
+  .app-title {
+    font-size: 1.6rem;
+    margin-bottom: 6px;
+    gap: 8px;
+  }
+
+  .app-icon {
+    width: 28px;
+    height: 28px;
+  }
+
+  .app-subtitle {
+    font-size: 0.9rem;
+  }
+
+  .page-icon {
+    margin-right: 6px;
+    width: 20px;
+    height: 20px;
+  }
+
+  .card {
+    padding: 15px 12px;
+  }
+
+  .tab-navigation {
+    margin-bottom: 15px;
+  }
+
+  .tab-btn {
+    padding: 12px 8px;
+    font-size: 0.9rem;
+    min-height: 44px; /* Touch-friendly */
+  }
+
+  .tab-icon {
+    width: 14px;
+    height: 14px;
+  }
+
+  .card-title {
+    font-size: 1.2rem;
+    margin-bottom: 15px;
+    text-align: center;
+  }
+
+  .card-icon {
+    width: 18px;
+    height: 18px;
+  }
+
+  .form-group {
+    margin-bottom: 15px;
+  }
+
+  label {
+    font-size: 14px;
+    margin-bottom: 8px;
+  }
+
+  .form-control {
+    padding: 12px 10px;
+    font-size: 16px; /* Prevents zoom on iOS */
+    border-radius: 6px;
+    min-height: 44px; /* Touch-friendly */
+  }
+
+  textarea.form-control {
+    min-height: 80px;
+  }
+
+  .char-count {
+    font-size: 12px;
+    margin-top: 4px;
+  }
+
+  .toggle-group {
+    gap: 8px;
+    flex-direction: column;
+  }
+
+  .toggle-btn {
+    min-width: auto;
+    width: 100%;
+    padding: 12px 10px;
+    font-size: 14px;
+    min-height: 44px; /* Touch-friendly */
+    border-radius: 6px;
+  }
+
+  .btn-icon {
+    width: 16px;
+    height: 16px;
+    margin-right: 4px;
+  }
+
+  .recurrence-options {
+    padding: 12px;
+    margin-top: -8px;
+  }
+
+  .days-select {
+    gap: 6px;
+    justify-content: space-around;
+  }
+
+  .day-btn {
+    width: 36px;
+    height: 36px;
+    font-size: 14px;
+    border-radius: 6px;
+  }
+
+  .action-buttons {
+    margin-top: 20px;
+    gap: 8px;
+  }
+
+  .btn-primary, .btn-secondary {
+    width: 100%;
+    padding: 14px 16px;
+    font-size: 16px;
+    min-height: 44px; /* Touch-friendly */
+    border-radius: 6px;
+    justify-content: center;
+  }
+
+  .btn-icon {
+    width: 18px;
+    height: 18px;
+  }
+
+  .error-message, .success-message {
+    font-size: 14px;
+    padding: 12px;
+    margin-top: 15px;
+    border-radius: 6px;
+  }
+}
+
+/* Small mobile devices (361px - 480px) */
+@media (max-width: 480px) and (min-width: 361px) {
+  .home-container {
+    padding: 16px 12px;
+  }
+
+  .app-title {
+    font-size: 1.7rem;
+    gap: 10px;
+  }
+
+  .app-icon {
+    width: 30px;
+    height: 30px;
+  }
+
+  .card {
+    padding: 20px 15px;
+  }
+
+  .tab-btn {
+    padding: 14px 12px;
+    min-height: 44px;
+  }
+
+  .toggle-group {
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .toggle-btn {
+    width: 100%;
+    min-height: 44px;
+  }
+
+  .form-control {
+    min-height: 44px;
+    font-size: 16px; /* Prevents zoom */
+  }
+
+  .btn-primary, .btn-secondary {
+    min-height: 44px;
+    width: 100%;
+  }
+}
+
+/* Medium mobile devices and tablets (481px - 767px) */
+@media (max-width: 767px) and (min-width: 481px) {
+  .toggle-group {
+    gap: 10px;
+  }
+
+  .toggle-btn {
+    flex: 1 0 45%;
+    min-width: 150px;
+  }
+
+  .action-buttons {
+    justify-content: center;
+    gap: 15px;
+  }
+}
+
+/* Existing mobile optimization (≤768px) */
 @media (max-width: 768px) {
   .form-row {
     flex-direction: column;
@@ -726,6 +960,20 @@ textarea.form-control {
   
   .btn-primary {
     width: 100%;
+  }
+
+  /* Touch-friendly form elements */
+  .form-control,
+  .toggle-btn,
+  .btn-primary,
+  .btn-secondary,
+  .tab-btn {
+    min-height: 44px;
+  }
+
+  .day-btn {
+    min-width: 40px;
+    min-height: 40px;
   }
 }
 

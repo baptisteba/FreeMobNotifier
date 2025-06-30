@@ -482,7 +482,173 @@ textarea.form-control {
   margin-top: 20px;
 }
 
-/* Mobile Responsive */
+/* Mobile Responsive - Enhanced for all screen sizes */
+
+/* Very small mobile devices (≤360px) */
+@media (max-width: 360px) {
+  .schedule-container {
+    padding: 12px 8px;
+  }
+
+  .page-title {
+    font-size: 1.4rem;
+    margin-bottom: 15px;
+    text-align: center;
+  }
+
+  .page-icon {
+    margin-right: 6px;
+    width: 20px;
+    height: 20px;
+  }
+
+  .card {
+    padding: 15px 12px;
+  }
+
+  .form-group {
+    margin-bottom: 15px;
+  }
+
+  label {
+    font-size: 14px;
+    margin-bottom: 8px;
+  }
+
+  .form-control {
+    padding: 12px 10px;
+    font-size: 16px; /* Prevents zoom on iOS */
+    border-radius: 6px;
+    min-height: 44px; /* Touch-friendly */
+  }
+
+  textarea.form-control {
+    min-height: 80px;
+  }
+
+  .char-count {
+    font-size: 12px;
+    margin-top: 4px;
+  }
+
+  .toggle-group {
+    gap: 8px;
+    flex-direction: column;
+  }
+
+  .toggle-btn {
+    min-width: auto;
+    width: 100%;
+    padding: 12px 10px;
+    font-size: 14px;
+    min-height: 44px; /* Touch-friendly */
+    border-radius: 6px;
+  }
+
+  .btn-icon {
+    width: 16px;
+    height: 16px;
+    margin-right: 4px;
+  }
+
+  .recurrence-options {
+    padding: 12px;
+    margin-top: -8px;
+  }
+
+  .days-select {
+    gap: 6px;
+    justify-content: space-around;
+    flex-wrap: wrap;
+  }
+
+  .day-btn {
+    width: 36px;
+    height: 36px;
+    font-size: 14px;
+    border-radius: 6px;
+  }
+
+  .form-actions {
+    margin-top: 20px;
+    gap: 10px;
+    flex-direction: column-reverse;
+  }
+
+  .btn-primary, .btn-secondary {
+    width: 100%;
+    padding: 14px 16px;
+    font-size: 16px;
+    min-height: 44px; /* Touch-friendly */
+    border-radius: 6px;
+    justify-content: center;
+  }
+
+  .error-message, .success-message {
+    font-size: 14px;
+    padding: 12px;
+    margin-top: 15px;
+    border-radius: 6px;
+  }
+}
+
+/* Small mobile devices (361px - 480px) */
+@media (max-width: 480px) and (min-width: 361px) {
+  .schedule-container {
+    padding: 16px 12px;
+  }
+
+  .page-title {
+    font-size: 1.6rem;
+  }
+
+  .card {
+    padding: 20px 15px;
+  }
+
+  .toggle-group {
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .toggle-btn {
+    width: 100%;
+    min-height: 44px;
+  }
+
+  .form-control {
+    min-height: 44px;
+    font-size: 16px; /* Prevents zoom */
+  }
+
+  .btn-primary, .btn-secondary {
+    min-height: 44px;
+    width: 100%;
+  }
+
+  .form-actions {
+    flex-direction: column-reverse;
+    gap: 12px;
+  }
+}
+
+/* Medium mobile devices and tablets (481px - 767px) */
+@media (max-width: 767px) and (min-width: 481px) {
+  .toggle-group {
+    gap: 10px;
+  }
+
+  .toggle-btn {
+    flex: 1 0 45%;
+    min-width: 150px;
+  }
+
+  .form-actions {
+    gap: 15px;
+  }
+}
+
+/* Existing mobile optimization (≤768px) */
 @media (max-width: 768px) {
   .form-row {
     flex-direction: column;
@@ -502,6 +668,19 @@ textarea.form-control {
   .btn-primary, .btn-secondary {
     width: 100%;
     justify-content: center;
+  }
+
+  /* Touch-friendly form elements */
+  .form-control,
+  .toggle-btn,
+  .btn-primary,
+  .btn-secondary {
+    min-height: 44px;
+  }
+
+  .day-btn {
+    min-width: 36px;
+    min-height: 36px;
   }
 }
 </style> 

@@ -7,111 +7,7 @@
       Historique des messages
     </h1>
 
-    <div class="cards-container">
-      <!-- Scheduled Messages Card -->
-      <div class="card scheduled-card">
-        <h2 class="card-title">
-          <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="card-icon">
-            <circle cx="12" cy="12" r="10"></circle>
-            <polyline points="12 6 12 12 16 14"></polyline>
-          </svg>
-          Messages programmés
-          <span class="count-badge">{{ filteredPendingMessages.length }}</span>
-        </h2>
-        
-        <div class="filter-section">
-          <div class="filter-controls">
-            <div class="filter-group">
-              <label for="recurrence-filter">Récurrence</label>
-              <select id="recurrence-filter" v-model="filter.recurrence" @change="fetchMessages" class="form-control">
-                <option value="all">Tous les types</option>
-                <option value="none">Une fois</option>
-                <option value="daily">Quotidien</option>
-                <option value="weekly">Hebdomadaire</option>
-                <option value="monthly">Mensuel</option>
-              </select>
-            </div>
-            
-            <button @click="fetchMessages" class="btn-refresh" title="Rafraîchir">
-              <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                <polyline points="23 4 23 10 17 10"></polyline>
-                <polyline points="1 20 1 14 7 14"></polyline>
-                <path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"></path>
-              </svg>
-            </button>
-          </div>
-        </div>
-        
-        <div v-if="isLoading" class="loading">
-          <svg class="spinner" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <line x1="12" y1="2" x2="12" y2="6"></line>
-            <line x1="12" y1="18" x2="12" y2="22"></line>
-            <line x1="4.93" y1="4.93" x2="7.76" y2="7.76"></line>
-            <line x1="16.24" y1="16.24" x2="19.07" y2="19.07"></line>
-            <line x1="2" y1="12" x2="6" y2="12"></line>
-            <line x1="18" y1="12" x2="22" y2="12"></line>
-            <line x1="4.93" y1="19.07" x2="7.76" y2="16.24"></line>
-            <line x1="16.24" y1="7.76" x2="19.07" y2="4.93"></line>
-          </svg>
-        </div>
-        
-        <div v-else-if="filteredPendingMessages.length === 0" class="empty-state">
-          <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1" stroke-linecap="round" stroke-linejoin="round">
-            <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
-            <line x1="16" y1="2" x2="16" y2="6"></line>
-            <line x1="8" y1="2" x2="8" y2="6"></line>
-            <line x1="3" y1="10" x2="21" y2="10"></line>
-            <path d="M8 14h.01"></path>
-            <path d="M12 14h.01"></path>
-            <path d="M16 14h.01"></path>
-            <path d="M8 18h.01"></path>
-            <path d="M12 18h.01"></path>
-            <path d="M16 18h.01"></path>
-          </svg>
-          <p>Aucun message programmé</p>
-        </div>
-        
-        <div v-else class="message-list">
-          <div v-for="message in filteredPendingMessages" :key="message._id" class="message-item scheduled-item" :class="messageStatusClass(message)">
-            <div class="message-header">
-              <div class="message-status">
-                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                  <circle cx="12" cy="12" r="10"></circle>
-                  <polyline points="12 6 12 12 16 14"></polyline>
-                </svg>
-                <span>En attente</span>
-              </div>
-              <div class="message-actions">
-                <button @click="deleteMessage(message._id)" class="action-btn delete-btn" title="Supprimer">
-                  <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                    <polyline points="3 6 5 6 21 6"></polyline>
-                    <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
-                    <line x1="10" y1="11" x2="10" y2="17"></line>
-                    <line x1="14" y1="11" x2="14" y2="17"></line>
-                  </svg>
-                </button>
-              </div>
-            </div>
-            
-            <div class="message-content">{{ message.content }}</div>
-            
-            <div class="message-details">
-              <div v-if="message.recurrence === 'none'" class="detail-row">
-                <span class="detail-label">Date d'envoi:</span>
-                <span class="detail-value">{{ formatDate(message.sendAt) }}</span>
-              </div>
-              
-              <div v-if="message.recurrence !== 'none'" class="detail-row">
-                <span class="detail-label">Récurrence:</span>
-                <span class="detail-value">{{ formatRecurrence(message) }}</span>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-      
-      <!-- Sent Messages Card -->
-      <div class="card sent-card">
+    <div class="card sent-card">
         <h2 class="card-title">
           <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="card-icon">
             <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
@@ -166,32 +62,26 @@
           <p>Aucun message envoyé</p>
         </div>
         
-        <div v-else class="sent-messages-table">
-          <div class="table-header">
-            <div class="status-column">Statut</div>
-            <div class="date-column">Date et heure</div>
-            <div class="message-column">Message</div>
-          </div>
-          
-          <div class="table-body">
-            <div v-for="(message, index) in paginatedSentMessages" :key="message._id" class="table-row">
-              <div class="status-column">
-                <div class="status-icon">
+        <div v-else class="sent-messages-container">
+          <div class="sent-message-list">
+            <div v-for="(message, index) in paginatedSentMessages" :key="message._id" class="sent-message-card">
+              <div class="sent-message-header">
+                <div class="message-status sent">
                   <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="sent-icon">
                     <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
                     <polyline points="22 4 12 14.01 9 11.01"></polyline>
                   </svg>
+                  <span>Envoyé</span>
+                </div>
+                <div class="message-date">
+                  {{ formatDate(message.lastSent || message.sendAt) }}
                 </div>
               </div>
               
-              <div class="date-column">
-                {{ formatDate(message.lastSent || message.sendAt) }}
-              </div>
-              
-              <div class="message-column">
-                <div class="message-preview" @click="toggleMessageExpand(message)">
+              <div class="sent-message-content">
+                <div class="message-text" @click="toggleMessageExpand(message)">
                   {{ getTruncatedMessage(message.content) }}
-                  <button v-if="isMessageTruncated(message.content)" class="expand-btn">
+                  <button v-if="isMessageTruncated(message.content)" class="expand-btn" title="Voir le message complet">
                     <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                       <polyline points="9 18 15 12 9 6"></polyline>
                     </svg>
@@ -252,7 +142,6 @@
           </div>
         </div>
       </div>
-    </div>
 
     <!-- Modal for full message display -->
     <div v-if="modalMessage" class="modal-overlay" @click="closeModal">
@@ -286,7 +175,6 @@ export default {
     const messages = ref([]);
     const isLoading = ref(true);
     const filter = ref({
-      recurrence: 'all',
       search: ''
     });
     const expandedMessages = reactive({});
@@ -295,18 +183,7 @@ export default {
     const currentPage = ref(1);
     const itemsPerPage = ref(7); // Number of items to show per page
     
-    // Computed properties for the two message types
-    const pendingMessages = computed(() => {
-      return messages.value.filter(msg => msg.status === 'pending');
-    });
-    
-    const filteredPendingMessages = computed(() => {
-      if (filter.value.recurrence === 'all') {
-        return pendingMessages.value;
-      }
-      return pendingMessages.value.filter(msg => msg.recurrence === filter.value.recurrence);
-    });
-    
+    // Computed properties for sent messages only
     const sentMessages = computed(() => {
       return messages.value.filter(msg => msg.status === 'sent');
     });
@@ -426,84 +303,8 @@ export default {
         minute: '2-digit'
       }).format(date);
     };
-    
-    // Format status
-    const formatStatus = (status) => {
-      const statusMap = {
-        pending: 'En attente',
-        sent: 'Envoyé',
-        failed: 'Échoué',
-        cancelled: 'Annulé'
-      };
-      
-      return statusMap[status] || status;
-    };
-    
-    // Format recurrence
-    const formatRecurrence = (message) => {
-      if (!message.recurrence || message.recurrence === 'none') {
-        return 'Une seule fois';
-      }
-      
-      const config = message.recurrenceConfig || {};
-      let result = '';
-      
-      switch (message.recurrence) {
-        case 'daily':
-          result = 'Quotidien';
-          break;
-        case 'weekly':
-          result = 'Hebdomadaire';
-          if (config.daysOfWeek && config.daysOfWeek.length > 0) {
-            const days = ['Dimanche', 'Lundi', 'Mardi', 'Mercredi', 'Jeudi', 'Vendredi', 'Samedi'];
-            const selectedDays = config.daysOfWeek.map(day => days[day]).join(', ');
-            result += ` (${selectedDays})`;
-          }
-          break;
-        case 'monthly':
-          result = 'Mensuel';
-          if (config.dayOfMonth) {
-            result += ` (Jour ${config.dayOfMonth})`;
-          }
-          break;
-        default:
-          result = message.recurrence;
-      }
-      
-      // Add time if available
-      if (config.hour !== undefined && config.minute !== undefined) {
-        const hour = String(config.hour).padStart(2, '0');
-        const minute = String(config.minute).padStart(2, '0');
-        result += ` à ${hour}:${minute}`;
-      }
-      
-      return result;
-    };
-    
-    // Message status class
-    const messageStatusClass = (message) => {
-      return {
-        'status-pending': message.status === 'pending',
-        'status-sent': message.status === 'sent',
-        'status-failed': message.status === 'failed',
-        'status-cancelled': message.status === 'cancelled'
-      };
-    };
-    
-    // Delete a message
-    const deleteMessage = async (messageId) => {
-      if (!confirm('Êtes-vous sûr de vouloir supprimer définitivement ce message ?')) {
-        return;
-      }
-      
-      try {
-        await axios.delete(`/api/messages/${messageId}`);
-        await fetchMessages(); // Refresh the list
-      } catch (error) {
-        console.error('Error deleting message:', error);
-        alert('Impossible de supprimer le message.');
-      }
-    };
+
+
     
     // Filter sent messages
     const filterSentMessages = () => {
@@ -517,21 +318,12 @@ export default {
     // Timeout reference for debouncing
     const filterTimeout = ref(null);
     
-    // Watch for filter changes
-    watch(() => filter.value.recurrence, (newVal, oldVal) => {
-      if (newVal !== oldVal) {
-        fetchMessages();
-      }
-    });
-    
     // Modal state
     const modalMessage = ref(null);
     const modalDate = ref(null);
     
     return {
       messages,
-      pendingMessages,
-      filteredPendingMessages,
       sentMessages,
       filteredSentMessages,
       paginatedSentMessages,
@@ -541,13 +333,9 @@ export default {
       currentPage,
       totalPages,
       formatDate,
-      formatStatus,
-      formatRecurrence,
-      messageStatusClass,
       isMessageTruncated,
       getTruncatedMessage,
       toggleMessageExpand,
-      deleteMessage,
       fetchMessages,
       filterSentMessages,
       changePage,
@@ -561,7 +349,7 @@ export default {
 
 <style scoped>
 .history-container {
-  max-width: 1200px;
+  max-width: 800px;
   margin: 0 auto;
   padding: 20px;
 }
@@ -569,10 +357,12 @@ export default {
 .page-title {
   display: flex;
   align-items: center;
+  justify-content: center;
   font-size: 1.8rem;
   margin-bottom: 20px;
   color: var(--free-primary-color, #E1000F);
-  font-weight: 600;
+  font-weight: 700;
+  text-align: center;
 }
 
 .page-icon {
@@ -583,42 +373,39 @@ export default {
   margin-bottom: 20px;
   flex-shrink: 0;
   width: 100%;
-  height: auto;
-  min-height: 70px;
   box-sizing: border-box;
 }
 
 .filter-controls {
   display: flex;
-  gap: 15px;
+  gap: 12px;
   align-items: flex-end;
   width: 100%;
-  height: auto;
   box-sizing: border-box;
 }
 
 .filter-group {
   flex: 1;
-  max-width: 250px;
-  height: auto;
-  min-height: 70px;
   box-sizing: border-box;
 }
 
-.cards-container {
-  display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  gap: 20px;
-}
 
-.card {
+
+.card, .sent-card {
   background: white;
   border-radius: 10px;
-  padding: 25px;
+  padding: 15px;
   box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
-  min-height: 700px;
   display: flex;
   flex-direction: column;
+}
+
+/* Desktop styles */
+@media (min-width: 769px) {
+  .card, .sent-card {
+    padding: 25px;
+    min-height: 500px;
+  }
 }
 
 .card-title {
@@ -629,11 +416,7 @@ export default {
   margin-bottom: 25px;
   color: var(--free-primary-color, #E1000F);
   flex-shrink: 0;
-  height: 36px;
-  min-height: 36px;
-  width: 100%;
-  box-sizing: border-box;
-  font-weight: 600;
+  font-weight: 700;
   text-align: center;
 }
 
@@ -851,40 +634,60 @@ label {
 }
 
 .message-details {
-  padding: 12px 15px;
-  background-color: #fafafa;
-  font-size: 13px;
+  padding: 8px 15px;
+  background-color: #f8f9fa;
+  border-radius: 6px;
+  margin-top: 8px;
 }
 
 .detail-row {
   display: flex;
-  margin-bottom: 8px;
+  align-items: center;
+  margin-bottom: 6px;
 }
 
 .detail-row:last-child {
   margin-bottom: 0;
 }
 
+.detail-row.inline {
+  gap: 6px;
+  font-size: 12px;
+}
+
+.detail-icon {
+  color: #666;
+  flex-shrink: 0;
+  width: 14px;
+  height: 14px;
+}
+
 .detail-label {
   flex: 0 0 120px;
   font-weight: 600;
   color: #666;
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
 }
 
 .detail-value {
   flex: 1;
+  color: #333;
 }
 
-/* Sent Messages Table */
-.sent-messages-table {
+.detail-value.compact {
+  font-weight: 500;
+  color: #555;
+  font-size: 12px;
+}
+
+/* Sent Messages Cards */
+.sent-messages-container {
   display: flex;
   flex-direction: column;
   width: 100%;
-  border: 1px solid #eee;
-  border-radius: 8px;
-  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
   animation: slideIn 0.3s ease;
-  overflow: hidden;
 }
 
 @keyframes slideIn {
@@ -898,151 +701,111 @@ label {
   }
 }
 
-.table-header {
-  display: flex;
-  background-color: #f5f5f5;
-  font-weight: 600;
-  border-bottom: 2px solid #ddd;
-  color: #333;
-  position: sticky;
-  top: 0;
-  z-index: 1;
-  width: 100%;
-  height: 48px;
-  min-height: 48px;
-  box-sizing: border-box;
-}
-
-.table-header .status-column,
-.table-header .date-column,
-.table-header .message-column {
-  font-weight: 600;
-  letter-spacing: 0.02em;
-}
-
-.table-body {
+.sent-message-list {
   display: flex;
   flex-direction: column;
-  width: 100%;
+  gap: 16px;
+  margin-bottom: 20px;
 }
 
-.table-row {
-  display: flex;
-  border-bottom: 1px solid #eee;
-  width: 100%;
+.sent-message-card {
+  background: white;
+  border-radius: 12px;
+  border: 1px solid #e5e5e5;
+  overflow: hidden;
   transition: all 0.2s ease;
-  min-height: 60px;
-  height: auto;
-  box-sizing: border-box;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+  padding: 0;
 }
 
-.table-row:nth-child(even) {
-  background-color: #f9f9f9;
+.sent-message-card:hover {
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
+  transform: translateY(-1px);
 }
 
-.table-row:hover {
-  background-color: #f0f7ff;
-}
-
-.table-row:last-child {
-  border-bottom: none;
-}
-
-.status-column, .date-column, .message-column {
-  padding: 12px 15px;
-  display: flex;
-  align-items: center;
-  box-sizing: border-box;
-}
-
-.status-column {
-  flex: 0 0 60px;
-  width: 60px;
-  min-width: 60px;
-  justify-content: center;
-  border-right: 1px solid #eee;
-}
-
-.date-column {
-  flex: 0 0 180px;
-  width: 180px;
-  min-width: 180px;
-  border-right: 1px solid #eee;
-  font-weight: 500;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  line-height: 1.2;
-}
-
-.message-column {
-  flex: 1;
-  min-width: 0;
-  flex-direction: column;
-  padding-top: 8px;
-  padding-bottom: 8px;
-  width: calc(100% - 240px); /* 60px status + 180px date */
-}
-
-.sent-icon {
-  color: #28a745;
-  width: 20px;
-  height: 20px;
-  min-width: 20px;
-  min-height: 20px;
-}
-
-.message-preview {
-  width: 100%;
+.sent-message-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  cursor: pointer;
-  padding: 8px 10px;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  transition: all 0.2s ease;
-  min-height: 28px;
-  height: auto;
-  box-sizing: border-box;
-  border-radius: 4px;
+  padding: 16px 20px;
+  background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
+  color: white;
 }
 
-.table-row:hover .message-preview {
-  color: var(--free-primary-color, #E1000F);
-  background-color: rgba(0, 0, 0, 0.02);
+.message-status {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-weight: 600;
+  font-size: 14px;
+}
+
+.message-status.sent {
+  color: white;
+}
+
+.sent-icon {
+  color: white;
+  width: 16px;
+  height: 16px;
+  min-width: 16px;
+  min-height: 16px;
+}
+
+.message-date {
+  color: white;
+  font-size: 12px;
+  font-weight: 500;
+}
+
+.sent-message-content {
+  padding: 20px;
+  background: white;
+}
+
+.message-text {
+  font-size: 16px;
+  line-height: 1.5;
+  color: #333;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px;
+  border-radius: 8px;
+  background: #f8f9fa;
+  transition: background-color 0.2s;
+  word-break: break-word;
+}
+
+.message-text:hover {
+  background: #e9ecef;
 }
 
 .expand-btn {
   background: none;
   border: none;
+  color: var(--free-primary-color, #E1000F);
   cursor: pointer;
-  padding: 4px;
-  color: #666;
-  margin-left: 8px;
-  flex-shrink: 0;
-  border-radius: 50%;
-  width: 24px;
-  height: 24px;
-  min-width: 24px;
-  min-height: 24px;
   display: flex;
   align-items: center;
   justify-content: center;
-  transition: background-color 0.2s ease;
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  transition: all 0.2s;
+  flex-shrink: 0;
+  margin-left: auto;
 }
 
 .expand-btn:hover {
-  background-color: rgba(0, 0, 0, 0.05);
-  color: var(--free-primary-color, #E1000F);
+  background-color: rgba(225, 0, 15, 0.1);
+  transform: scale(1.1);
 }
 
 .expand-btn svg {
   width: 16px;
   height: 16px;
-  min-width: 16px;
-  min-height: 16px;
 }
 
 /* Status colors */
@@ -1062,27 +825,372 @@ label {
   color: #6c757d;
 }
 
-/* Mobile Responsive */
-@media (max-width: 900px) {
-  .cards-container {
-    grid-template-columns: 1fr;
+/* Mobile Responsive - Enhanced for all screen sizes */
+
+/* Very small mobile devices (≤360px) */
+@media (max-width: 360px) {
+  .history-container {
+    padding: 12px 8px;
   }
-  
+
+  .page-title {
+    font-size: 1.4rem;
+    margin-bottom: 15px;
+    text-align: center;
+    justify-content: center;
+  }
+
+  .page-icon {
+    margin-right: 6px;
+    width: 20px;
+    height: 20px;
+  }
+
+
+
+  .card {
+    padding: 12px;
+    min-height: auto;
+  }
+
+  .card-title {
+    font-size: 1.2rem;
+    margin-bottom: 15px;
+    flex-wrap: wrap;
+    height: auto;
+    line-height: 1.3;
+  }
+
+  .card-icon {
+    width: 18px;
+    height: 18px;
+  }
+
+  .count-badge {
+    font-size: 0.7rem;
+    padding: 1px 6px;
+    margin-left: 6px;
+    margin-top: 2px;
+  }
+
+  .filter-section {
+    margin-bottom: 15px;
+  }
+
   .filter-controls {
-    flex-direction: column;
+    flex-direction: row;
     gap: 10px;
-    align-items: flex-start;
-    min-height: 130px;
+    align-items: flex-end;
+  }
+
+  .filter-group {
+    flex: 1;
+  }
+
+  .filter-group label {
+    font-size: 14px;
+    margin-bottom: 6px;
+  }
+
+  .form-control {
+    padding: 10px 12px;
+    font-size: 16px; /* Prevents zoom on iOS */
+    border-radius: 6px;
+    min-height: 44px;
+    box-sizing: border-box;
+  }
+
+  .btn-refresh {
+    width: 44px;
+    height: 44px;
+    flex-shrink: 0;
+    border-radius: 6px;
+    min-height: 44px;
+    margin-bottom: 0;
+  }
+
+  /* Message list optimizations */
+  .message-list {
+    gap: 10px;
+    max-height: none;
+  }
+
+  .message-item {
+    border-radius: 6px;
+  }
+
+  .message-header {
+    padding: 8px 12px;
+    flex-wrap: wrap;
+    height: auto;
+    min-height: 44px;
+  }
+
+  .message-status {
+    font-size: 13px;
+    gap: 6px;
+  }
+
+  .message-status svg {
+    width: 14px;
+    height: 14px;
+  }
+
+  .action-btn {
+    width: 36px;
+    height: 36px;
+    min-width: 36px;
+    min-height: 36px;
+    border-radius: 6px;
+  }
+
+  .message-content {
+    padding: 10px 12px;
+    font-size: 14px;
+    max-height: 80px;
+  }
+
+  .message-details {
+    padding: 8px 12px;
+    margin-top: 6px;
+  }
+
+  .detail-row.inline {
+    gap: 4px;
+    font-size: 11px;
+    justify-content: flex-start;
+  }
+
+  .detail-icon {
+    width: 12px;
+    height: 12px;
+  }
+
+  .detail-value.compact {
+    font-size: 11px;
+    font-weight: 600;
+  }
+
+  /* Card optimizations for very small screens */
+  .sent-message-list {
+    gap: 10px;
+  }
+
+  .sent-message-card {
+    border-radius: 6px;
+    font-size: 13px;
+    padding: 0;
+  }
+
+  .sent-message-header {
+    padding: 12px 16px;
+    flex-wrap: nowrap;
+  }
+
+  .message-status {
+    font-size: 12px;
+    gap: 4px;
+  }
+
+  .message-status svg {
+    width: 14px;
+    height: 14px;
+  }
+
+  .message-date {
+    font-size: 11px;
+    color: white;
+  }
+
+  .message-text {
+    padding: 8px 10px;
+    border-radius: 4px;
+    font-size: 13px;
+    min-height: 44px;
+    line-height: 1.3;
+  }
+
+  .expand-btn {
+    width: 32px;
+    height: 32px;
+    margin-left: 4px;
+  }
+
+  .expand-btn svg {
+    width: 12px;
+    height: 12px;
+  }
+
+  /* Pagination optimizations */
+  .pagination-controls {
+    flex-direction: row;
+    justify-content: space-between;
+    padding: 16px;
+    gap: 12px;
+    height: auto;
+    align-items: center;
+  }
+
+  .pagination-info {
+    margin-right: 0;
+    font-size: 12px;
+  }
+
+  .pagination-buttons {
+    gap: 6px;
+  }
+
+  .pagination-btn {
+    width: 40px;
+    height: 40px;
+    min-width: 40px;
+    min-height: 40px;
+    border-radius: 6px;
+  }
+
+  /* Modal optimizations */
+  .modal-container {
+    width: 98%;
+    margin: 4px;
+    max-height: 92vh;
+    border-radius: 8px;
+  }
+
+  .modal-header {
+    padding: 12px 15px;
+  }
+
+  .modal-header h3 {
+    font-size: 16px;
+  }
+
+  .modal-content {
+    padding: 15px;
+  }
+
+  .modal-message {
+    font-size: 14px;
+    line-height: 1.4;
+  }
+}
+
+/* Small mobile devices (361px - 480px) */
+@media (max-width: 480px) and (min-width: 361px) {
+  .history-container {
+    padding: 16px 12px;
+  }
+
+  .page-title {
+    font-size: 1.6rem;
+    justify-content: center;
+  }
+
+
+
+  .card {
+    padding: 18px;
+  }
+
+  .card-title {
+    font-size: 1.3rem;
+  }
+
+  .filter-controls {
+    flex-direction: row;
+    gap: 12px;
+    align-items: flex-end;
   }
   
   .filter-group {
-    width: 100%;
+    flex: 1;
+  }
+
+  .form-control {
+    min-height: 44px;
+    box-sizing: border-box;
+  }
+
+  .btn-refresh {
+    flex-shrink: 0;
+    width: 44px;
+    height: 44px;
+    min-height: 44px;
+    margin-bottom: 0;
+  }
+
+  .sent-message-card {
+    padding: 0;
+    border-radius: 8px;
+  }
+
+  .sent-message-header {
+    padding: 14px 18px;
+    flex-wrap: nowrap;
+  }
+
+  .message-text {
+    min-height: 44px;
+    font-size: 14px;
+  }
+
+  .message-details {
+    padding: 8px 15px;
+    margin-top: 8px;
+  }
+
+  .detail-row.inline {
+    gap: 5px;
+    font-size: 12px;
+  }
+
+  .detail-icon {
+    width: 13px;
+    height: 13px;
+  }
+
+  .detail-value.compact {
+    font-size: 12px;
+  }
+
+  .pagination-btn {
+    width: 36px;
+    height: 36px;
+  }
+}
+
+/* Medium mobile devices and tablets (481px - 767px) */
+@media (max-width: 767px) and (min-width: 481px) {
+  .filter-controls {
+    flex-direction: row;
+    flex-wrap: wrap;
+    gap: 12px;
+  }
+
+  .filter-group {
+    flex: 1;
+    min-width: 200px;
+  }
+
+  .btn-refresh {
+    flex-shrink: 0;
+  }
+}
+
+/* Existing medium screen optimizations (≤900px) */
+@media (max-width: 900px) {
+  .filter-controls {
+    flex-direction: row;
+    gap: 10px;
+    align-items: flex-end;
+  }
+  
+  .filter-group {
+    flex: 1;
     max-width: none;
-    min-height: 70px;
   }
   
   .btn-refresh {
-    align-self: flex-start;
+    flex-shrink: 0;
   }
   
   .detail-row {
@@ -1093,41 +1201,39 @@ label {
     margin-bottom: 4px;
   }
   
-  .sent-messages-table {
+  .sent-messages-container {
     border-radius: 6px;
   }
   
-  .table-header, .table-row {
+  .sent-message-card {
     position: relative;
   }
   
-  .status-column {
-    flex: 0 0 40px;
-    width: 40px;
-    min-width: 40px;
+  .sent-message-header {
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+    padding: 12px 16px;
   }
   
-  .date-column {
-    flex: 0 0 110px;
-    width: 110px;
-    min-width: 110px;
+  .message-status {
     font-size: 13px;
   }
   
-  .message-column {
-    padding-right: 10px;
-    width: calc(100% - 150px); /* 40px status + 110px date */
+  .message-date {
+    font-size: 12px;
   }
   
-  .message-full {
+  .message-text {
     padding: 10px;
-    margin-right: 5px;
-    width: calc(100% - 15px);
+    font-size: 13px;
   }
   
   .pagination-controls {
-    padding: 10px;
-    height: 50px;
+    flex-direction: row;
+    justify-content: space-between;
+    padding: 15px;
+    height: auto;
     min-height: 50px;
   }
   
@@ -1143,118 +1249,177 @@ label {
   }
 }
 
+/* Existing small screen optimizations (≤500px) */
 @media (max-width: 500px) {
   .card {
     padding: 15px;
   }
   
-  .table-header, .table-row {
-    flex-wrap: wrap;
-    height: auto;
+  .sent-message-card {
+    padding: 0;
   }
   
-  .table-header {
-    min-height: 80px;
+  .sent-message-header {
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+    padding: 12px 16px;
   }
   
-  .table-row {
-    min-height: 100px;
+  .message-status {
+    font-size: 12px;
   }
   
-  .status-column {
-    flex: 0 0 40px;
-    width: 40px;
-    min-width: 40px;
-    height: 40px;
-    min-height: 40px;
+  .message-date {
+    font-size: 11px;
+    margin-top: 2px;
   }
   
-  .date-column {
-    flex: 1;
-    width: calc(100% - 40px);
-    min-width: calc(100% - 40px);
-    border-right: none;
-    border-bottom: 1px solid #eee;
-    height: 40px;
-    min-height: 40px;
-  }
-  
-  .message-column {
-    flex: 0 0 100%;
-    width: 100%;
-    min-width: 100%;
-    padding-left: 15px;
-    min-height: 60px;
-  }
-  
-  .message-full {
-    width: 100%;
-    margin-left: 0;
-    margin-right: 0;
+  .message-text {
+    padding: 10px;
+    font-size: 13px;
+    min-height: 50px;
   }
   
   .pagination-controls {
-    flex-direction: column;
-    align-items: flex-end;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
     height: auto;
-    min-height: 80px;
+    min-height: 60px;
     gap: 8px;
+    padding: 15px;
   }
   
   .pagination-info {
     margin-right: 0;
+    font-size: 12px;
+  }
+}
+
+/* Enhanced loading and empty states for mobile */
+@media (max-width: 768px) {
+  .loading, .empty-state {
+    padding: 30px 15px;
+    min-height: 200px;
+  }
+
+  .loading .spinner,
+  .empty-state svg {
+    width: 40px;
+    height: 40px;
+  }
+
+  .empty-state p {
+    font-size: 14px;
+    margin-top: 10px;
+  }
+}
+
+/* Touch-friendly interactive elements */
+@media (max-width: 768px) {
+  .expand-btn,
+  .pagination-btn,
+  .btn-refresh {
+    min-height: 44px;
+    min-width: 44px;
+  }
+
+  .message-text {
+    min-height: 44px;
+    display: flex;
+    align-items: center;
+  }
+
+  /* Improve tap targets */
+  .nav-item,
+  .form-control,
+  select.form-control {
+    min-height: 44px;
+  }
+}
+
+/* Improve modal responsiveness */
+@media (max-width: 768px) {
+  .modal-container {
+    width: 95%;
+    max-height: 85vh;
+    margin: 20px;
+  }
+  
+  .modal-header {
+    padding: 12px 15px;
+  }
+  
+  .modal-content {
+    padding: 15px;
+  }
+  
+  .modal-message {
+    font-size: 14px;
+  }
+  
+  .modal-close-btn {
+    width: 40px;
+    height: 40px;
+    min-width: 40px;
+    min-height: 40px;
   }
 }
 
 .pagination-controls {
   display: flex;
-  justify-content: flex-end;
+  justify-content: space-between;
   align-items: center;
-  padding: 15px;
-  border-top: 1px solid #eee;
-  background-color: #f9f9f9;
-  height: 60px;
-  min-height: 60px;
-  box-sizing: border-box;
+  background: white;
+  border-radius: 12px;
+  border: 1px solid #e5e5e5;
+}
+
+/* Desktop styles */
+@media (min-width: 769px) {
+  .pagination-controls {
+    padding: 20px;
+    margin-top: 20px;
+  }
 }
 
 .pagination-info {
-  margin-right: 15px;
-  color: #666;
   font-size: 14px;
+  color: #666;
+  font-weight: 500;
 }
 
 .pagination-buttons {
   display: flex;
-  gap: 5px;
+  gap: 8px;
 }
 
 .pagination-btn {
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 32px;
-  height: 32px;
-  min-width: 32px;
-  min-height: 32px;
-  border-radius: 4px;
+  width: 40px;
+  height: 40px;
+  border-radius: 8px;
   border: 1px solid #ddd;
   background-color: white;
   cursor: pointer;
   transition: all 0.2s;
-  color: #333;
-  box-sizing: border-box;
+  color: #666;
 }
 
 .pagination-btn:hover:not(:disabled) {
-  background-color: #f0f7ff;
-  border-color: #ccc;
-  color: var(--free-primary-color, #E1000F);
+  background-color: var(--free-primary-color, #E1000F);
+  color: white;
+  border-color: var(--free-primary-color, #E1000F);
+  transform: translateY(-1px);
 }
 
 .pagination-btn:disabled {
-  opacity: 0.5;
+  opacity: 0.4;
   cursor: not-allowed;
+  background-color: #f5f5f5;
 }
 
 /* Modal styles */
@@ -1359,26 +1524,6 @@ label {
 @keyframes fadeIn {
   from { opacity: 0; }
   to { opacity: 1; }
-}
-
-/* Improve modal responsiveness */
-@media (max-width: 768px) {
-  .modal-container {
-    width: 95%;
-    max-height: 80vh;
-  }
-  
-  .modal-header {
-    padding: 12px 15px;
-  }
-  
-  .modal-content {
-    padding: 15px;
-  }
-  
-  .modal-message {
-    font-size: 14px;
-  }
 }
 
 :global(body.modal-open) {

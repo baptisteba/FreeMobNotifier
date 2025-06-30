@@ -59,6 +59,15 @@ body {
 
 .main-content {
   flex: 1;
+  padding-bottom: 80px; /* Space for bottom navigation on mobile */
+}
+
+/* Desktop adjustments */
+@media (min-width: 768px) {
+  .main-content {
+    padding-bottom: 0;
+    padding-top: 80px; /* Space for top navigation on desktop */
+  }
 }
 
 .container {

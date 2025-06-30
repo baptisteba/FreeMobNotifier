@@ -4,6 +4,7 @@ import App from './App.vue';
 import Home from './views/Home.vue';
 import Settings from './views/Settings.vue';
 import MessageHistory from './views/MessageHistory.vue';
+import ScheduledMessages from './views/ScheduledMessages.vue';
 
 // Import CSS
 import './assets/main.css';
@@ -12,7 +13,8 @@ import './assets/main.css';
 const routes = [
   { path: '/', component: Home },
   { path: '/settings', component: Settings },
-  { path: '/history', component: MessageHistory }
+  { path: '/history', component: MessageHistory },
+  { path: '/scheduled', component: ScheduledMessages }
 ];
 
 const router = createRouter({
