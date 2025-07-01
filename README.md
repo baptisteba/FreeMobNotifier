@@ -14,6 +14,8 @@ A modern, mobile-optimized web application for sending SMS notifications through
 - 🗄️ **Local file-based database** (no external database required)
 - 🎨 **Modern card-based interface** with touch-friendly navigation
 - ⏰ **Smart date formatting** and compact message display
+- 📈 **Complete message tracking** with individual history for recurring messages
+- 🔄 **Persistent recurring schedules** that maintain active status
 
 ## 🚀 Application Structure
 
@@ -38,6 +40,8 @@ Central hub for sending and scheduling messages with two tabs:
 
 ### 📜 Historique (Message History)
 Dedicated view for **sent messages only**:
+- **Individual history entries** for each recurring message sent
+- **Chronological ordering** from newest to oldest (most recent on top)
 - Search functionality across message content
 - Pagination for easy navigation
 - Modern card-based display
@@ -159,9 +163,46 @@ If you encounter issues during installation or startup:
 The application uses **@seald-io/nedb**, a lightweight file-based database that is fully compatible with the MongoDB API but doesn't require a separate database server. All data is stored in the `./data` directory:
 
 - `settings.db`: Stores Free Mobile API credentials
-- `messages.db`: Stores all messages (immediate, scheduled, and recurring)
+- `messages.db`: Stores all messages (immediate, scheduled, recurring, and history)
 
-This approach makes the application much easier to set up and run without external dependencies.
+### 📊 Message Data Structure
+
+The system intelligently manages different types of messages:
+
+**Recurring Messages** (`status: 'pending'`):
+- Original scheduling templates that remain active
+- Contain recurrence configuration (daily, weekly, monthly)
+- Updated with `lastSent` timestamp after each successful send
+- Never change to "sent" status to maintain recurring schedule
+
+**History Entries** (`status: 'sent'`):
+- Individual records created for each successful message delivery
+- Linked to original recurring message via `originalRecurringMessageId`
+- Sorted by actual send time for chronological history display
+- Include exact timestamp when message was delivered
+
+**One-time Messages**:
+- Single messages that change from "pending" to "sent" when delivered
+- No separate history entries needed
+
+This approach makes the application much easier to set up and run without external dependencies while providing complete message tracking.
+
+### 🎯 Benefits of the Enhanced Message System
+
+**Complete History Tracking**:
+- Every message sent (recurring or one-time) appears in history
+- Chronological order shows exactly when each message was delivered
+- Easy to track frequency and success of recurring messages
+
+**Persistent Scheduling**:
+- Recurring messages continue working indefinitely
+- No need to recreate schedules after each send
+- Clear separation between active schedules and delivery history
+
+**Improved Organization**:
+- **Scheduled view**: Shows active recurring schedules
+- **History view**: Shows all delivered messages
+- **Smart filtering**: Find specific messages easily
 
 ## 🐳 Docker Deployment
 
@@ -254,6 +295,9 @@ Before using the application, you need to configure your Free Mobile API credent
 ### 📊 Smart Scheduling System
 - **Cron-based scheduler** checking every minute
 - **Intelligent recurrence handling** (daily, weekly, monthly)
+- **Individual history tracking** - each recurring message send creates a separate history entry
+- **Smart message ordering** - history sorted by actual send time (newest first)
+- **Persistent recurring schedules** - original recurring message stays active for future sends
 - **Retry mechanism** for failed messages
 - **Automatic cleanup** of old sent messages (30+ days)
 - **Context-aware date formatting** (Today, Tomorrow, weekday names)
@@ -276,9 +320,21 @@ The Free Mobile API is used as follows:
 
 ## 🔄 Message Status Flow
 
+### One-time Messages:
 1. **Pending**: Message scheduled, waiting for send time
 2. **Sent**: Message successfully delivered to Free Mobile API
-3. **Failed**: Delivery failed (with retry mechanism for one-time messages)
+3. **Failed**: Delivery failed (with retry mechanism)
+
+### Recurring Messages:
+1. **Pending**: Recurring schedule active, waiting for next occurrence
+2. **When sent**: Creates separate **"Sent"** history entry for each delivery
+3. **Original schedule**: Remains **"Pending"** for future occurrences
+4. **History tracking**: Each successful send appears individually in Message History
+
+### Message History Display:
+- **Chronological order**: Most recent messages appear first
+- **Smart sorting**: Uses actual send time for accurate ordering
+- **Individual entries**: Each recurring message send creates its own history record
 
 ## 🎯 Browser Compatibility
 
