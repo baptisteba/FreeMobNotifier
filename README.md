@@ -1,4 +1,4 @@
-# �� FreeMobNotifier
+# 📱FreeMobNotifier
 
 A modern, mobile-optimized web application for sending SMS notifications through the Free Mobile API with advanced scheduling capabilities.
 
