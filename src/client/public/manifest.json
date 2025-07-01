@@ -1,0 +1,106 @@
+{
+  "name": "FreeMobNotifier",
+  "short_name": "FreeMob",
+  "description": "Send and schedule SMS notifications through Free Mobile API",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#f8f8f8",
+  "theme_color": "#E1000F",
+  "orientation": "portrait-primary",
+  "scope": "/",
+  "id": "/freemobnotifier",
+  "prefer_related_applications": false,
+  "icons": [
+    {
+      "src": "/icons/icon-72x72.png",
+      "sizes": "72x72",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/icons/icon-96x96.png",
+      "sizes": "96x96",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/icons/icon-128x128.png",
+      "sizes": "128x128",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/icons/icon-144x144.png",
+      "sizes": "144x144",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/icons/icon-152x152.png",
+      "sizes": "152x152",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/icons/icon-192x192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/icons/icon-384x384.png",
+      "sizes": "384x384",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/icons/icon-512x512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ],
+  "categories": ["utilities", "productivity"],
+  "screenshots": [
+    {
+      "src": "/screenshots/mobile-1.png",
+      "sizes": "390x844",
+      "type": "image/png",
+      "form_factor": "narrow",
+      "label": "Home screen"
+    },
+    {
+      "src": "/screenshots/desktop-1.png",
+      "sizes": "1280x720",
+      "type": "image/png",
+      "form_factor": "wide",
+      "label": "Desktop view"
+    }
+  ],
+  "shortcuts": [
+    {
+      "name": "Send Message",
+      "short_name": "Send",
+      "description": "Send a new SMS message",
+      "url": "/",
+      "icons": [
+        {
+          "src": "/icons/shortcut-send.png",
+          "sizes": "96x96"
+        }
+      ]
+    },
+    {
+      "name": "Schedule Message",
+      "short_name": "Schedule",
+      "description": "Schedule a message for later",
+      "url": "/",
+      "icons": [
+        {
+          "src": "/icons/shortcut-schedule.png",
+          "sizes": "96x96"
+        }
+      ]
+    }
+  ]
+} 

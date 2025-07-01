@@ -2,18 +2,27 @@ FROM node:18-alpine
 
 WORKDIR /app
 
-# Copy package files first for better caching
+# Install dependencies for better caching
 COPY package*.json ./
 COPY src/client/package*.json ./src/client/
 
-# Install dependencies
+# Install all dependencies
 RUN npm run install:all
 
-# Copy app source
+# Copy source code
 COPY . .
 
-# Build client for production
+# Build client for production with PWA optimization
+ENV NODE_ENV=production
 RUN npm run build
+
+# Verify PWA files are built correctly
+RUN echo "Checking PWA files..." && \
+    ls -la src/client/dist/ && \
+    test -f src/client/dist/manifest.json && \
+    test -f src/client/dist/sw.js && \
+    test -f src/client/dist/offline.html && \
+    echo "PWA files verified successfully"
 
 # Create data directory for @seald-io/nedb
 RUN mkdir -p /app/data

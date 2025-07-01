@@ -9,6 +9,9 @@
       </router-link>
       
       <div class="navbar-actions">
+        <!-- PWA Install Button - Desktop Only -->
+        <InstallPWA class="desktop-only install-pwa-button" />
+        
         <router-link to="/" class="nav-item" title="Accueil" active-class="active">
           <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="nav-icon">
             <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
@@ -43,6 +46,17 @@
     </div>
   </nav>
 </template>
+
+<script>
+import InstallPWA from './InstallPWA.vue';
+
+export default {
+  name: 'Navbar',
+  components: {
+    InstallPWA
+  }
+};
+</script>
 
 <style scoped>
 .navbar {
@@ -252,6 +266,10 @@
   .logo-text {
     display: inline;
     margin-left: 8px;
+  }
+  
+  .install-pwa-button {
+    margin-right: 10px;
   }
 }
 </style> 

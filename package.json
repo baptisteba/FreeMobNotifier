@@ -10,9 +10,17 @@
     "dev:server": "nodemon src/server/index.js",
     "client": "cd src/client && npm run dev",
     "client:build": "cd src/client && npm run build",
+    "client:preview": "cd src/client && npm run serve",
     "install:all": "npm install && cd src/client && npm install",
-    "build": "npm run client:build",
+    "build": "npm run client:build && npm run build:verify",
+    "build:verify": "node scripts/verify-pwa-build.js",
     "postinstall": "cd src/client && npm install",
+    "pwa:audit": "cd src/client && npx lighthouse http://localhost:5173 --port=9222 --chrome-flags='--headless' --only-categories=pwa --output=json --output-path=./lighthouse-pwa-report.json",
+    "docker:build": "docker build -t freemobnotifier .",
+    "docker:run": "docker run -p 18596:3000 freemobnotifier",
+    "docker:up": "docker-compose up -d",
+    "docker:down": "docker-compose down",
+    "docker:logs": "docker-compose logs -f",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "dependencies": {

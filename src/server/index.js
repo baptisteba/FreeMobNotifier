@@ -12,9 +12,45 @@ const schedulerService = require('./services/schedulerService');
 const app = express();
 const PORT = process.env.PORT || 3000;
 
+// Trust proxy for real IP and protocol detection when behind reverse proxy
+if (process.env.TRUST_PROXY === 'true' || process.env.NODE_ENV === 'production') {
+  app.set('trust proxy', 1);
+}
+
 // Middleware
 app.use(cors());
 app.use(express.json());
+
+// PWA-specific middleware for proper headers
+app.use((req, res, next) => {
+  // Set proper MIME types for PWA files
+  if (req.path === '/manifest.json') {
+    res.setHeader('Content-Type', 'application/manifest+json');
+  }
+  
+  if (req.path === '/sw.js') {
+    res.setHeader('Content-Type', 'application/javascript');
+    res.setHeader('Service-Worker-Allowed', '/');
+    // Prevent caching of service worker in production
+    res.setHeader('Cache-Control', 'no-cache, no-store, must-revalidate');
+  }
+  
+  if (req.path === '/browserconfig.xml') {
+    res.setHeader('Content-Type', 'application/xml');
+  }
+  
+  // Set security headers for PWA
+  res.setHeader('X-Content-Type-Options', 'nosniff');
+  res.setHeader('X-Frame-Options', 'DENY');
+  res.setHeader('X-XSS-Protection', '1; mode=block');
+  
+  // Set cache headers for static assets
+  if (req.path.startsWith('/assets/') || req.path.startsWith('/icons/')) {
+    res.setHeader('Cache-Control', 'public, max-age=31536000, immutable');
+  }
+  
+  next();
+});
 
 console.log('Starting FreeMobNotifier with local database (@seald-io/nedb)');
 console.log('Database files will be stored in the ./data directory');
