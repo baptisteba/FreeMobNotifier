@@ -113,6 +113,52 @@
         </div>
       </div>
     </div>
+
+    <!-- Interface Preferences Section -->
+    <div class="card">
+      <h2 class="card-title">
+        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="card-icon">
+          <circle cx="12" cy="12" r="3"></circle>
+          <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path>
+        </svg>
+        Préférences d'interface
+      </h2>
+      
+      <p class="api-info">
+        Personnalisez l'apparence de l'application selon vos préférences.
+      </p>
+      
+      <div class="form-group">
+        <label>Thème de l'application</label>
+        <div class="theme-selector">
+          <button 
+            @click="setTheme('light')" 
+            :class="['theme-option', !isDarkMode ? 'active' : '']"
+            title="Mode clair"
+          >
+            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="theme-icon">
+              <circle cx="12" cy="12" r="5"></circle>
+              <path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"></path>
+            </svg>
+            <span>Mode clair</span>
+          </button>
+          
+          <button 
+            @click="setTheme('dark')" 
+            :class="['theme-option', isDarkMode ? 'active' : '']"
+            title="Mode sombre"
+          >
+            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="theme-icon">
+              <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+            </svg>
+            <span>Mode sombre</span>
+          </button>
+        </div>
+        <div class="theme-description">
+          <p>Le thème choisi sera automatiquement sauvegardé et appliqué lors de vos prochaines visites.</p>
+        </div>
+      </div>
+    </div>
     
     <div v-if="successMessage" class="success-message">
       {{ successMessage }}
@@ -127,9 +173,12 @@
 <script>
 import { ref, reactive, onMounted, computed } from 'vue';
 import axios from 'axios';
+import { useTheme } from '../composables/useTheme.js';
 
 export default {
   setup() {
+    const { isDarkMode, setTheme } = useTheme();
+    
     const settings = reactive({
       userId: '',
       apiKey: ''
@@ -278,10 +327,17 @@ export default {
       }
     };
     
+    // Handle theme change
+    const handleThemeChange = (theme) => {
+      setTheme(theme);
+    };
+    
     // Load settings on mount
     onMounted(loadSettings);
     
     return {
+      isDarkMode,
+      setTheme: handleThemeChange,
       settings,
       errors,
       isLoading,
@@ -324,13 +380,14 @@ export default {
 }
 
 .card {
-  background: white;
+  background: var(--free-card-background);
   border-radius: 10px;
   padding: 25px;
-  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 4px 10px var(--free-shadow);
   margin-bottom: 20px;
   position: relative;
   z-index: 1;
+  transition: background-color 0.3s ease, box-shadow 0.3s ease;
 }
 
 .card-title {
@@ -356,7 +413,7 @@ export default {
   flex-direction: column;
   align-items: center;
   padding: 40px 0;
-  color: #666;
+  color: var(--free-text-color-secondary);
 }
 
 .spinner {
@@ -372,7 +429,7 @@ export default {
 
 .api-info {
   margin-bottom: 20px;
-  color: #666;
+  color: var(--free-text-color-secondary);
   line-height: 1.5;
 }
 
@@ -384,19 +441,28 @@ label {
   display: block;
   margin-bottom: 8px;
   font-weight: 600;
-  color: #333;
+  color: var(--free-text-color);
 }
 
 .form-control {
   width: 100%;
   padding: 10px 12px;
-  border: 1px solid #ccc;
+  border: 1px solid var(--free-border-color);
   border-radius: 4px;
   font-size: 14px;
+  background-color: var(--free-card-background);
+  color: var(--free-text-color);
+  transition: border-color 0.3s ease, background-color 0.3s ease, color 0.3s ease;
+}
+
+.form-control:focus {
+  outline: none;
+  border-color: var(--free-primary-color);
+  box-shadow: 0 0 0 3px rgba(225, 0, 15, 0.1);
 }
 
 .form-control.is-invalid {
-  border-color: #dc3545;
+  border-color: var(--free-error-color);
 }
 
 .api-key-input {
@@ -416,10 +482,15 @@ label {
   background: none;
   border: none;
   cursor: pointer;
-  color: #666;
+  color: var(--free-text-color-secondary);
   display: flex;
   align-items: center;
   justify-content: center;
+  transition: color 0.3s ease;
+}
+
+.toggle-visibility-btn:hover {
+  color: var(--free-primary-color);
 }
 
 .form-actions {
@@ -439,6 +510,7 @@ label {
   align-items: center;
   gap: 8px;
   font-size: 1.05rem;
+  transition: background-color 0.3s ease, color 0.3s ease;
 }
 
 .btn-primary {
@@ -448,14 +520,24 @@ label {
   justify-content: center;
 }
 
+.btn-primary:hover {
+  background-color: #c5000d;
+}
+
 .btn-secondary {
-  background-color: #f2f2f2;
-  color: #333;
+  background-color: var(--free-card-background);
+  color: var(--free-text-color);
+  border: 1px solid var(--free-border-color);
+}
+
+.btn-secondary:hover {
+  background-color: var(--free-border-color);
 }
 
 .btn-primary:disabled, .btn-secondary:disabled {
-  background-color: #ccc;
+  background-color: var(--free-border-color);
   cursor: not-allowed;
+  opacity: 0.6;
 }
 
 .btn-icon {
@@ -465,30 +547,89 @@ label {
 .last-updated {
   margin-top: 20px;
   font-size: 12px;
-  color: #666;
+  color: var(--free-text-color-secondary);
   text-align: right;
 }
 
 .error-message {
-  color: #dc3545;
+  color: var(--free-error-color);
   font-size: 12px;
   margin-top: 4px;
 }
 
 .error-message.global {
   padding: 10px;
-  background-color: #f8d7da;
+  background-color: rgba(244, 67, 54, 0.1);
+  border: 1px solid var(--free-error-color);
   border-radius: 4px;
   margin-top: 20px;
 }
 
 .success-message {
   padding: 15px;
-  background-color: #d4edda;
-  color: #155724;
+  background-color: rgba(76, 175, 80, 0.1);
+  color: var(--free-success-color);
+  border: 1px solid var(--free-success-color);
   border-radius: 4px;
   text-align: center;
   margin-top: 20px;
+}
+
+/* Theme Selector Styles */
+.theme-selector {
+  display: flex;
+  gap: 12px;
+  margin-top: 8px;
+}
+
+.theme-option {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 12px 16px;
+  border: 2px solid var(--free-border-color);
+  border-radius: 8px;
+  background: var(--free-card-background);
+  color: var(--free-text-color);
+  cursor: pointer;
+  transition: all 0.3s ease;
+  font-weight: 500;
+  min-height: 48px;
+}
+
+.theme-option:hover {
+  border-color: var(--free-primary-color);
+  background-color: rgba(225, 0, 15, 0.05);
+}
+
+.theme-option.active {
+  border-color: var(--free-primary-color);
+  background-color: rgba(225, 0, 15, 0.1);
+  color: var(--free-primary-color);
+}
+
+.theme-option.active .theme-icon {
+  color: var(--free-primary-color);
+}
+
+.theme-icon {
+  flex-shrink: 0;
+  width: 20px;
+  height: 20px;
+  transition: color 0.3s ease;
+}
+
+.theme-description {
+  margin-top: 12px;
+}
+
+.theme-description p {
+  color: var(--free-text-color-secondary);
+  font-size: 14px;
+  line-height: 1.4;
+  text-align: center;
 }
 
 /* Mobile Responsive - Enhanced for all screen sizes */
@@ -607,6 +748,26 @@ label {
     margin-top: 15px;
     border-radius: 6px;
   }
+
+  .theme-selector {
+    gap: 6px;
+    flex-direction: column;
+  }
+
+  .theme-option {
+    padding: 12px;
+    min-height: 44px;
+    font-size: 14px;
+  }
+
+  .theme-icon {
+    width: 16px;
+    height: 16px;
+  }
+
+  .theme-description p {
+    font-size: 12px;
+  }
 }
 
 /* Small mobile devices (361px - 480px) */
@@ -640,6 +801,21 @@ label {
   .form-actions {
     flex-direction: column;
     gap: 12px;
+  }
+
+  .theme-selector {
+    gap: 8px;
+  }
+
+  .theme-option {
+    padding: 10px 12px;
+    min-height: 44px;
+    font-size: 14px;
+  }
+
+  .theme-icon {
+    width: 18px;
+    height: 18px;
   }
 }
 
@@ -680,6 +856,15 @@ label {
 
   .toggle-visibility-btn {
     min-width: 44px;
+  }
+
+  .theme-option {
+    min-height: 44px;
+    padding: 12px 14px;
+  }
+
+  .theme-selector {
+    gap: 10px;
   }
 }
 </style> 

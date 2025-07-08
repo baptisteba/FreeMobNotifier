@@ -26,6 +26,7 @@ export default {
 </script>
 
 <style>
+/* Variables CSS pour le thème clair */
 :root {
   --free-primary-color: #E1000F;
   --free-secondary-color: #333333;
@@ -34,6 +35,29 @@ export default {
   --free-success-color: #4CAF50;
   --free-warning-color: #FF9800;
   --free-error-color: #F44336;
+  --free-text-color: #333333;
+  --free-text-color-secondary: #666666;
+  --free-card-background: #ffffff;
+  --free-navbar-background: #ffffff;
+  --free-footer-background: #f5f5f5;
+  --free-shadow: rgba(0, 0, 0, 0.1);
+}
+
+/* Variables CSS pour le thème sombre */
+:root.dark-theme {
+  --free-primary-color: #FF1A2D;
+  --free-secondary-color: #e0e0e0;
+  --free-background-color: #1a1a1a;
+  --free-border-color: #404040;
+  --free-success-color: #5CBF60;
+  --free-warning-color: #FFA726;
+  --free-error-color: #F66859;
+  --free-text-color: #e0e0e0;
+  --free-text-color-secondary: #b0b0b0;
+  --free-card-background: #2a2a2a;
+  --free-navbar-background: #2a2a2a;
+  --free-footer-background: #1f1f1f;
+  --free-shadow: rgba(0, 0, 0, 0.3);
 }
 
 /* Global styles */
@@ -47,8 +71,9 @@ body {
   font-family: Arial, Helvetica, sans-serif;
   font-size: 16px;
   line-height: 1.5;
-  color: var(--free-secondary-color);
+  color: var(--free-text-color);
   background-color: var(--free-background-color);
+  transition: background-color 0.3s ease, color 0.3s ease;
 }
 
 .app {
@@ -60,6 +85,10 @@ body {
 .main-content {
   flex: 1;
   padding-bottom: 80px; /* Space for bottom navigation on mobile */
+  background-color: var(--free-background-color);
+  color: var(--free-text-color);
+  transition: background-color 0.3s ease, color 0.3s ease;
+  min-height: calc(100vh - 140px); /* Ensure content fills available space */
 }
 
 /* Desktop adjustments */
@@ -74,15 +103,18 @@ body {
   max-width: 1200px;
   margin: 0 auto;
   padding: 0 15px;
+  color: var(--free-text-color);
+  transition: color 0.3s ease;
 }
 
 .footer {
-  background-color: #f5f5f5;
+  background-color: var(--free-footer-background);
   padding: 1rem 0;
   border-top: 1px solid var(--free-border-color);
   text-align: center;
   font-size: 14px;
-  color: #666;
+  color: var(--free-text-color-secondary);
+  transition: background-color 0.3s ease, border-color 0.3s ease;
 }
 
 /* Utility classes */
@@ -102,6 +134,29 @@ body {
   text-align: center;
 }
 
+/* Theme utility classes */
+.theme-bg {
+  background-color: var(--free-background-color);
+  color: var(--free-text-color);
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+.theme-card-bg {
+  background-color: var(--free-card-background);
+  color: var(--free-text-color);
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+.theme-text {
+  color: var(--free-text-color);
+  transition: color 0.3s ease;
+}
+
+.theme-text-secondary {
+  color: var(--free-text-color-secondary);
+  transition: color 0.3s ease;
+}
+
 /* Button styles */
 .btn {
   display: inline-block;
@@ -110,7 +165,7 @@ body {
   cursor: pointer;
   font-weight: 600;
   text-decoration: none;
-  transition: background-color 0.2s, transform 0.1s;
+  transition: background-color 0.3s ease, transform 0.1s ease;
 }
 
 .btn:active {
@@ -128,13 +183,14 @@ body {
 }
 
 .btn-secondary {
-  background-color: #f2f2f2;
-  color: var(--free-secondary-color);
+  background-color: var(--free-card-background);
+  color: var(--free-text-color);
   border: 1px solid var(--free-border-color);
+  transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease;
 }
 
 .btn-secondary:hover {
-  background-color: #e8e8e8;
+  background-color: var(--free-border-color);
 }
 
 /* Form styles */
@@ -144,6 +200,9 @@ body {
   border: 1px solid var(--free-border-color);
   border-radius: 4px;
   font-size: 1rem;
+  background-color: var(--free-card-background);
+  color: var(--free-text-color);
+  transition: border-color 0.3s ease, background-color 0.3s ease, color 0.3s ease, box-shadow 0.3s ease;
 }
 
 .form-control:focus {
@@ -154,11 +213,12 @@ body {
 
 /* Card styles */
 .card {
-  background: white;
+  background: var(--free-card-background);
   border-radius: 8px;
-  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 2px 10px var(--free-shadow);
   padding: 1.5rem;
   margin-bottom: 1.5rem;
+  transition: background-color 0.3s ease, box-shadow 0.3s ease;
 }
 
 /* Responsive styles */

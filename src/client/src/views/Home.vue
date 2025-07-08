@@ -103,6 +103,7 @@
             <label for="datetime">Date et heure d'envoi</label>
             <FreeDateTimePicker
               v-model="sendAt"
+              :dark="isDarkMode"
               :placeholder="'Sélectionnez une date et heure'"
               :format="formatDateTime"
             >
@@ -198,6 +199,7 @@ import { useRouter, useRoute } from 'vue-router';
 import axios from 'axios';
 import FreeDateTimePicker from '../components/FreeDateTimePicker.vue';
 import CalendarIcon from '../components/icons/CalendarIcon.vue';
+import { useTheme } from '../composables/useTheme.js';
 
 export default {
   components: {
@@ -207,6 +209,7 @@ export default {
   setup() {
     const router = useRouter();
     const route = useRoute();
+    const { isDarkMode } = useTheme();
     
     // Tab state
     const activeTab = ref('send');
@@ -389,6 +392,7 @@ export default {
     };
     
     return {
+      isDarkMode,
       activeTab,
       message,
       messageError,
@@ -447,50 +451,51 @@ export default {
 }
 
 .app-subtitle {
-  color: #666;
+  color: var(--free-text-color-secondary);
   font-size: 1rem;
   margin: 0;
   font-weight: 400;
 }
 
 .card {
-  background: white;
+  background: var(--free-card-background);
   border-radius: 10px;
   padding: 0;
-  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 4px 10px var(--free-shadow);
   margin-bottom: 20px;
   overflow: visible;
   position: relative;
   z-index: 1;
+  transition: background-color 0.3s ease, box-shadow 0.3s ease;
 }
 
 .tab-navigation {
   display: flex;
-  border-bottom: 1px solid #eee;
+  border-bottom: 1px solid var(--free-border-color);
 }
 
 .tab-btn {
   flex: 1;
   padding: 18px 20px;
   border: none;
-  background: #f9f9f9;
+  background: var(--free-background-color);
   cursor: pointer;
   display: flex;
   align-items: center;
   justify-content: center;
   gap: 10px;
-  transition: all 0.2s;
-  color: #666;
+  transition: all 0.3s ease;
+  color: var(--free-text-color-secondary);
   font-weight: 500;
   font-size: 1.1rem;
 }
 
 .tab-btn:hover {
-  background-color: #f0f0f0;
+  background-color: var(--free-border-color);
 }
 
 .tab-btn.active {
-  background-color: white;
+  background-color: var(--free-card-background);
   color: var(--free-primary-color, #E1000F);
   border-bottom: 3px solid var(--free-primary-color, #E1000F);
   font-weight: 600;
@@ -542,17 +547,19 @@ label {
   display: block;
   margin-bottom: 10px;
   font-weight: 600;
-  color: #333;
+  color: var(--free-text-color);
   font-size: 1.05rem;
 }
 
 .form-control {
   width: 100%;
   padding: 12px 15px;
-  border: 1px solid #ccc;
+  border: 1px solid var(--free-border-color);
   border-radius: 4px;
   font-size: 1rem;
-  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+  background-color: var(--free-card-background);
+  color: var(--free-text-color);
+  transition: border-color 0.3s ease, box-shadow 0.3s ease, background-color 0.3s ease, color 0.3s ease;
 }
 
 .form-control:focus {
@@ -567,13 +574,13 @@ textarea.form-control {
 }
 
 .form-control.is-invalid {
-  border-color: #dc3545;
+  border-color: var(--free-error-color);
 }
 
 .char-count {
   text-align: right;
   font-size: 13px;
-  color: #666;
+  color: var(--free-text-color-secondary);
   margin-top: 6px;
 }
 
@@ -588,15 +595,20 @@ textarea.form-control {
   flex: 1;
   min-width: 130px;
   padding: 12px;
-  border: 1px solid #ccc;
+  border: 1px solid var(--free-border-color);
   border-radius: 4px;
-  background: white;
+  background: var(--free-card-background);
   cursor: pointer;
   display: flex;
   align-items: center;
   justify-content: center;
-  transition: all 0.2s;
+  transition: all 0.3s ease;
   font-size: 1rem;
+  color: var(--free-text-color);
+}
+
+.toggle-btn:hover {
+  background-color: var(--free-border-color);
 }
 
 .toggle-btn.active {
@@ -615,10 +627,11 @@ textarea.form-control {
 }
 
 .recurrence-options {
-  background: #f9f9f9;
+  background: var(--free-background-color);
   padding: 15px;
   border-radius: 6px;
   margin-top: -10px;
+  border: 1px solid var(--free-border-color);
 }
 
 .days-select {
@@ -632,14 +645,20 @@ textarea.form-control {
   width: 40px;
   height: 40px;
   border-radius: 50%;
-  border: 1px solid #ccc;
-  background: white;
+  border: 1px solid var(--free-border-color);
+  background: var(--free-card-background);
   cursor: pointer;
   display: flex;
   align-items: center;
   justify-content: center;
   font-weight: bold;
   font-size: 1rem;
+  color: var(--free-text-color);
+  transition: all 0.3s ease;
+}
+
+.day-btn:hover {
+  background-color: var(--free-border-color);
 }
 
 .day-btn.active {
@@ -666,6 +685,7 @@ textarea.form-control {
   gap: 8px;
   text-decoration: none;
   font-size: 1.05rem;
+  transition: background-color 0.3s ease, color 0.3s ease;
 }
 
 .btn-primary {
@@ -675,14 +695,24 @@ textarea.form-control {
   justify-content: center;
 }
 
+.btn-primary:hover {
+  background-color: #c5000d;
+}
+
 .btn-secondary {
-  background-color: #f2f2f2;
-  color: #333;
+  background-color: var(--free-card-background);
+  color: var(--free-text-color);
+  border: 1px solid var(--free-border-color);
+}
+
+.btn-secondary:hover {
+  background-color: var(--free-border-color);
 }
 
 .btn-primary:disabled {
-  background-color: #ccc;
+  background-color: var(--free-border-color);
   cursor: not-allowed;
+  opacity: 0.6;
 }
 
 .btn-icon {
@@ -692,22 +722,24 @@ textarea.form-control {
 }
 
 .error-message {
-  color: #dc3545;
+  color: var(--free-error-color);
   font-size: 12px;
   margin-top: 4px;
 }
 
 .error-message.global {
   padding: 10px;
-  background-color: #f8d7da;
+  background-color: rgba(244, 67, 54, 0.1);
+  border: 1px solid var(--free-error-color);
   border-radius: 4px;
   margin-top: 20px;
 }
 
 .success-message {
   padding: 15px;
-  background-color: #d4edda;
-  color: #155724;
+  background-color: rgba(76, 175, 80, 0.1);
+  color: var(--free-success-color);
+  border: 1px solid var(--free-success-color);
   border-radius: 4px;
   text-align: center;
   margin-top: 20px;

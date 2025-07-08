@@ -389,15 +389,14 @@ export default {
   box-sizing: border-box;
 }
 
-
-
 .card, .sent-card {
-  background: white;
+  background: var(--free-card-background);
   border-radius: 10px;
   padding: 15px;
-  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 4px 10px var(--free-shadow);
   display: flex;
   flex-direction: column;
+  transition: background-color 0.3s ease, box-shadow 0.3s ease;
 }
 
 /* Desktop styles */
@@ -430,8 +429,8 @@ export default {
 
 .count-badge {
   margin-left: 10px;
-  background-color: #f0f0f0;
-  color: #666;
+  background-color: var(--free-background-color);
+  color: var(--free-text-color-secondary);
   border-radius: 12px;
   padding: 2px 8px;
   font-size: 0.8rem;
@@ -442,22 +441,25 @@ export default {
   display: flex;
   align-items: center;
   justify-content: center;
+  border: 1px solid var(--free-border-color);
 }
 
 label {
   display: block;
   margin-bottom: 8px;
   font-weight: 600;
-  color: #333;
+  color: var(--free-text-color);
 }
 
 .form-control {
   width: 100%;
   padding: 10px 12px;
-  border: 1px solid #ccc;
+  border: 1px solid var(--free-border-color);
   border-radius: 4px;
   font-size: 14px;
-  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+  background-color: var(--free-card-background);
+  color: var(--free-text-color);
+  transition: border-color 0.3s ease, box-shadow 0.3s ease, background-color 0.3s ease, color 0.3s ease;
 }
 
 .form-control:focus {
@@ -475,16 +477,16 @@ label {
   min-width: 42px;
   min-height: 42px;
   border-radius: 4px;
-  border: 1px solid #ccc;
-  background-color: white;
+  border: 1px solid var(--free-border-color);
+  background-color: var(--free-card-background);
   cursor: pointer;
-  transition: all 0.2s;
+  transition: all 0.3s ease;
   color: var(--free-primary-color, #E1000F);
   box-sizing: border-box;
 }
 
 .btn-refresh:hover {
-  background-color: #f8f8f8;
+  background-color: var(--free-background-color);
 }
 
 .btn-refresh svg {
@@ -500,7 +502,7 @@ label {
   align-items: center;
   justify-content: center;
   padding: 40px 0;
-  color: #666;
+  color: var(--free-text-color-secondary);
   flex: 1;
   width: 100%;
   min-height: 300px;
@@ -527,7 +529,7 @@ label {
   align-items: center;
   justify-content: center;
   padding: 30px 0;
-  color: #666;
+  color: var(--free-text-color-secondary);
   flex: 1;
   width: 100%;
   min-height: 300px;
@@ -536,7 +538,7 @@ label {
 
 .empty-state svg {
   margin-bottom: 15px;
-  color: #ccc;
+  color: var(--free-border-color);
   animation: floatAnimation 3s ease-in-out infinite;
   width: 48px;
   height: 48px;
@@ -557,7 +559,7 @@ label {
 }
 
 .empty-state p {
-  color: #888;
+  color: var(--free-text-color-secondary);
   font-size: 16px;
   animation: fadeIn 1s ease;
 }
@@ -572,8 +574,10 @@ label {
 
 .message-item {
   border-radius: 8px;
-  border: 1px solid #eee;
+  border: 1px solid var(--free-border-color);
   overflow: hidden;
+  background-color: var(--free-card-background);
+  transition: background-color 0.3s ease;
 }
 
 .scheduled-item {
@@ -585,8 +589,8 @@ label {
   justify-content: space-between;
   align-items: center;
   padding: 10px 15px;
-  background-color: #f9f9f9;
-  border-bottom: 1px solid #eee;
+  background-color: var(--free-background-color);
+  border-bottom: 1px solid var(--free-border-color);
 }
 
 .message-status {
@@ -595,6 +599,7 @@ label {
   gap: 8px;
   font-weight: bold;
   font-size: 14px;
+  color: var(--free-text-color);
 }
 
 .message-actions {
@@ -609,14 +614,15 @@ label {
   width: 32px;
   height: 32px;
   border-radius: 4px;
-  border: 1px solid #ddd;
-  background-color: white;
+  border: 1px solid var(--free-border-color);
+  background-color: var(--free-card-background);
   cursor: pointer;
-  transition: all 0.2s;
+  transition: all 0.3s ease;
+  color: var(--free-text-color);
 }
 
 .action-btn:hover {
-  background-color: #f2f2f2;
+  background-color: var(--free-background-color);
 }
 
 .delete-btn {
@@ -625,17 +631,19 @@ label {
 
 .message-content {
   padding: 12px 15px;
-  border-bottom: 1px solid #eee;
+  border-bottom: 1px solid var(--free-border-color);
   white-space: pre-wrap;
   word-break: break-word;
   font-size: 14px;
   max-height: 60px;
   overflow-y: auto;
+  color: var(--free-text-color);
+  background-color: var(--free-card-background);
 }
 
 .message-details {
   padding: 8px 15px;
-  background-color: #f8f9fa;
+  background-color: var(--free-background-color);
   border-radius: 6px;
   margin-top: 8px;
 }
@@ -656,7 +664,7 @@ label {
 }
 
 .detail-icon {
-  color: #666;
+  color: var(--free-text-color-secondary);
   flex-shrink: 0;
   width: 14px;
   height: 14px;
@@ -665,7 +673,7 @@ label {
 .detail-label {
   flex: 0 0 120px;
   font-weight: 600;
-  color: #666;
+  color: var(--free-text-color-secondary);
   font-size: 11px;
   text-transform: uppercase;
   letter-spacing: 0.5px;
@@ -673,12 +681,12 @@ label {
 
 .detail-value {
   flex: 1;
-  color: #333;
+  color: var(--free-text-color);
 }
 
 .detail-value.compact {
   font-weight: 500;
-  color: #555;
+  color: var(--free-text-color);
   font-size: 12px;
 }
 
@@ -709,17 +717,17 @@ label {
 }
 
 .sent-message-card {
-  background: white;
+  background: var(--free-card-background);
   border-radius: 12px;
-  border: 1px solid #e5e5e5;
+  border: 1px solid var(--free-border-color);
   overflow: hidden;
-  transition: all 0.2s ease;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+  transition: all 0.3s ease;
+  box-shadow: 0 2px 8px var(--free-shadow);
   padding: 0;
 }
 
 .sent-message-card:hover {
-  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
+  box-shadow: 0 4px 16px var(--free-shadow);
   transform: translateY(-1px);
 }
 
@@ -728,7 +736,7 @@ label {
   justify-content: space-between;
   align-items: center;
   padding: 16px 20px;
-  background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
+  background: linear-gradient(135deg, var(--free-success-color) 0%, #20c997 100%);
   color: white;
 }
 
@@ -753,54 +761,52 @@ label {
 }
 
 .message-date {
-  color: white;
   font-size: 12px;
+  color: rgba(255, 255, 255, 0.9);
   font-weight: 500;
+  white-space: nowrap;
 }
 
 .sent-message-content {
-  padding: 20px;
-  background: white;
+  padding: 16px 20px;
+  background: var(--free-card-background);
+  color: var(--free-text-color);
+  transition: background-color 0.3s ease, color 0.3s ease;
 }
 
 .message-text {
-  font-size: 16px;
-  line-height: 1.5;
-  color: #333;
+  font-size: 15px;
+  line-height: 1.4;
+  color: var(--free-text-color);
   cursor: pointer;
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  padding: 12px;
-  border-radius: 8px;
-  background: #f8f9fa;
-  transition: background-color 0.2s;
-  word-break: break-word;
+  word-wrap: break-word;
+  overflow-wrap: break-word;
+  hyphens: auto;
+  position: relative;
+  transition: color 0.3s ease;
 }
 
 .message-text:hover {
-  background: #e9ecef;
+  color: var(--free-primary-color);
 }
 
 .expand-btn {
+  position: absolute;
+  top: 50%;
+  right: 0;
+  transform: translateY(-50%);
   background: none;
   border: none;
-  color: var(--free-primary-color, #E1000F);
   cursor: pointer;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 24px;
-  height: 24px;
-  border-radius: 50%;
-  transition: all 0.2s;
-  flex-shrink: 0;
-  margin-left: auto;
+  color: var(--free-primary-color);
+  padding: 4px;
+  border-radius: 4px;
+  transition: all 0.3s ease;
 }
 
 .expand-btn:hover {
   background-color: rgba(225, 0, 15, 0.1);
-  transform: scale(1.1);
+  transform: translateY(-50%) scale(1.1);
 }
 
 .expand-btn svg {
@@ -808,21 +814,151 @@ label {
   height: 16px;
 }
 
+/* Pagination */
+.pagination-controls {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 20px;
+  padding: 15px 0;
+  border-top: 1px solid var(--free-border-color);
+}
+
+.pagination-info {
+  font-size: 14px;
+  color: var(--free-text-color-secondary);
+  font-weight: 500;
+}
+
+.pagination-buttons {
+  display: flex;
+  gap: 8px;
+}
+
+.pagination-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  border: 1px solid var(--free-border-color);
+  background-color: var(--free-card-background);
+  color: var(--free-text-color);
+  border-radius: 4px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.pagination-btn:hover:not(:disabled) {
+  background-color: var(--free-primary-color);
+  color: white;
+  border-color: var(--free-primary-color);
+}
+
+.pagination-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.pagination-btn svg {
+  width: 16px;
+  height: 16px;
+}
+
+/* Modal */
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  padding: 20px;
+}
+
+.modal-container {
+  background: var(--free-card-background);
+  border-radius: 8px;
+  max-width: 600px;
+  width: 100%;
+  max-height: 80vh;
+  overflow-y: auto;
+  box-shadow: 0 10px 30px var(--free-shadow);
+}
+
+.modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 20px 24px;
+  border-bottom: 1px solid var(--free-border-color);
+}
+
+.modal-header h3 {
+  margin: 0;
+  color: var(--free-text-color);
+  font-size: 1.2rem;
+}
+
+.modal-close-btn {
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: var(--free-text-color-secondary);
+  padding: 4px;
+  border-radius: 4px;
+  transition: all 0.3s ease;
+}
+
+.modal-close-btn:hover {
+  color: var(--free-primary-color);
+  background-color: rgba(225, 0, 15, 0.1);
+}
+
+.modal-content {
+  padding: 24px;
+}
+
+.modal-message {
+  white-space: pre-wrap;
+  word-wrap: break-word;
+  color: var(--free-text-color);
+  font-size: 15px;
+  line-height: 1.5;
+  margin-bottom: 20px;
+}
+
+.modal-info {
+  text-align: right;
+  border-top: 1px solid var(--free-border-color);
+  padding-top: 15px;
+}
+
+.modal-date {
+  font-size: 12px;
+  color: var(--free-text-color-secondary);
+  font-weight: 500;
+}
+
 /* Status colors */
 .status-pending .message-status {
-  color: #ffc107;
+  color: var(--free-warning-color);
 }
 
 .status-sent .message-status {
-  color: #28a745;
+  color: var(--free-success-color);
 }
 
 .status-failed .message-status {
-  color: #dc3545;
+  color: var(--free-error-color);
 }
 
 .status-cancelled .message-status {
-  color: #6c757d;
+  color: var(--free-text-color-secondary);
 }
 
 /* Mobile Responsive - Enhanced for all screen sizes */
@@ -845,8 +981,6 @@ label {
     width: 20px;
     height: 20px;
   }
-
-
 
   .card {
     padding: 12px;
@@ -909,69 +1043,6 @@ label {
     margin-bottom: 0;
   }
 
-  /* Message list optimizations */
-  .message-list {
-    gap: 10px;
-    max-height: none;
-  }
-
-  .message-item {
-    border-radius: 6px;
-  }
-
-  .message-header {
-    padding: 8px 12px;
-    flex-wrap: wrap;
-    height: auto;
-    min-height: 44px;
-  }
-
-  .message-status {
-    font-size: 13px;
-    gap: 6px;
-  }
-
-  .message-status svg {
-    width: 14px;
-    height: 14px;
-  }
-
-  .action-btn {
-    width: 36px;
-    height: 36px;
-    min-width: 36px;
-    min-height: 36px;
-    border-radius: 6px;
-  }
-
-  .message-content {
-    padding: 10px 12px;
-    font-size: 14px;
-    max-height: 80px;
-  }
-
-  .message-details {
-    padding: 8px 12px;
-    margin-top: 6px;
-  }
-
-  .detail-row.inline {
-    gap: 4px;
-    font-size: 11px;
-    justify-content: flex-start;
-  }
-
-  .detail-icon {
-    width: 12px;
-    height: 12px;
-  }
-
-  .detail-value.compact {
-    font-size: 11px;
-    font-weight: 600;
-  }
-
-  /* Card optimizations for very small screens */
   .sent-message-list {
     gap: 10px;
   }
@@ -999,78 +1070,43 @@ label {
 
   .message-date {
     font-size: 11px;
-    color: white;
+  }
+
+  .sent-message-content {
+    padding: 12px 16px;
   }
 
   .message-text {
-    padding: 8px 10px;
-    border-radius: 4px;
-    font-size: 13px;
-    min-height: 44px;
-    line-height: 1.3;
+    font-size: 14px;
+    line-height: 1.4;
   }
 
-  .expand-btn {
-    width: 32px;
-    height: 32px;
-    margin-left: 4px;
-  }
-
-  .expand-btn svg {
-    width: 12px;
-    height: 12px;
-  }
-
-  /* Pagination optimizations */
   .pagination-controls {
-    flex-direction: row;
-    justify-content: space-between;
-    padding: 16px;
-    gap: 12px;
-    height: auto;
-    align-items: center;
-  }
-
-  .pagination-info {
-    margin-right: 0;
-    font-size: 12px;
-  }
-
-  .pagination-buttons {
-    gap: 6px;
+    flex-direction: column;
+    gap: 10px;
+    text-align: center;
   }
 
   .pagination-btn {
     width: 40px;
     height: 40px;
-    min-width: 40px;
-    min-height: 40px;
-    border-radius: 6px;
   }
 
-  /* Modal optimizations */
   .modal-container {
-    width: 98%;
-    margin: 4px;
-    max-height: 92vh;
-    border-radius: 8px;
+    margin: 10px;
+    max-height: 90vh;
   }
 
   .modal-header {
-    padding: 12px 15px;
-  }
-
-  .modal-header h3 {
-    font-size: 16px;
+    padding: 16px 20px;
   }
 
   .modal-content {
-    padding: 15px;
+    padding: 20px;
   }
 
   .modal-message {
     font-size: 14px;
-    line-height: 1.4;
   }
 }
 
@@ -1082,451 +1118,60 @@ label {
 
   .page-title {
     font-size: 1.6rem;
-    justify-content: center;
   }
 
-
-
   .card {
-    padding: 18px;
+    padding: 16px;
   }
 
   .card-title {
     font-size: 1.3rem;
   }
 
-  .filter-controls {
-    flex-direction: row;
-    gap: 12px;
-    align-items: flex-end;
-  }
-  
-  .filter-group {
-    flex: 1;
-  }
-
   .form-control {
     min-height: 44px;
-    box-sizing: border-box;
+    font-size: 16px; /* Prevents zoom */
   }
 
   .btn-refresh {
-    flex-shrink: 0;
     width: 44px;
     height: 44px;
-    min-height: 44px;
-    margin-bottom: 0;
-  }
-
-  .sent-message-card {
-    padding: 0;
-    border-radius: 8px;
   }
 
   .sent-message-header {
     padding: 14px 18px;
-    flex-wrap: nowrap;
   }
 
-  .message-text {
-    min-height: 44px;
-    font-size: 14px;
-  }
-
-  .message-details {
-    padding: 8px 15px;
-    margin-top: 8px;
-  }
-
-  .detail-row.inline {
-    gap: 5px;
-    font-size: 12px;
-  }
-
-  .detail-icon {
-    width: 13px;
-    height: 13px;
-  }
-
-  .detail-value.compact {
-    font-size: 12px;
-  }
-
-  .pagination-btn {
-    width: 36px;
-    height: 36px;
+  .sent-message-content {
+    padding: 14px 18px;
   }
 }
 
 /* Medium mobile devices and tablets (481px - 767px) */
 @media (max-width: 767px) and (min-width: 481px) {
-  .filter-controls {
-    flex-direction: row;
-    flex-wrap: wrap;
-    gap: 12px;
-  }
-
-  .filter-group {
-    flex: 1;
-    min-width: 200px;
-  }
-
-  .btn-refresh {
-    flex-shrink: 0;
-  }
-}
-
-/* Existing medium screen optimizations (≤900px) */
-@media (max-width: 900px) {
-  .filter-controls {
-    flex-direction: row;
-    gap: 10px;
-    align-items: flex-end;
-  }
-  
-  .filter-group {
-    flex: 1;
-    max-width: none;
-  }
-  
-  .btn-refresh {
-    flex-shrink: 0;
-  }
-  
-  .detail-row {
-    flex-direction: column;
-  }
-  
-  .detail-label {
-    margin-bottom: 4px;
-  }
-  
-  .sent-messages-container {
-    border-radius: 6px;
-  }
-  
-  .sent-message-card {
-    position: relative;
-  }
-  
-  .sent-message-header {
-    flex-direction: row;
-    justify-content: space-between;
-    align-items: center;
-    padding: 12px 16px;
-  }
-  
-  .message-status {
-    font-size: 13px;
-  }
-  
-  .message-date {
-    font-size: 12px;
-  }
-  
-  .message-text {
-    padding: 10px;
-    font-size: 13px;
-  }
-  
   .pagination-controls {
-    flex-direction: row;
     justify-content: space-between;
-    padding: 15px;
-    height: auto;
-    min-height: 50px;
+    gap: 15px;
   }
-  
-  .pagination-info {
-    font-size: 12px;
-  }
-  
+
   .pagination-btn {
-    width: 28px;
-    height: 28px;
-    min-width: 28px;
-    min-height: 28px;
-  }
-}
-
-/* Existing small screen optimizations (≤500px) */
-@media (max-width: 500px) {
-  .card {
-    padding: 15px;
-  }
-  
-  .sent-message-card {
-    padding: 0;
-  }
-  
-  .sent-message-header {
-    flex-direction: row;
-    justify-content: space-between;
-    align-items: center;
-    padding: 12px 16px;
-  }
-  
-  .message-status {
-    font-size: 12px;
-  }
-  
-  .message-date {
-    font-size: 11px;
-    margin-top: 2px;
-  }
-  
-  .message-text {
-    padding: 10px;
-    font-size: 13px;
-    min-height: 50px;
-  }
-  
-  .pagination-controls {
-    flex-direction: row;
-    justify-content: space-between;
-    align-items: center;
-    height: auto;
-    min-height: 60px;
-    gap: 8px;
-    padding: 15px;
-  }
-  
-  .pagination-info {
-    margin-right: 0;
-    font-size: 12px;
-  }
-}
-
-/* Enhanced loading and empty states for mobile */
-@media (max-width: 768px) {
-  .loading, .empty-state {
-    padding: 30px 15px;
-    min-height: 200px;
-  }
-
-  .loading .spinner,
-  .empty-state svg {
     width: 40px;
     height: 40px;
   }
-
-  .empty-state p {
-    font-size: 14px;
-    margin-top: 10px;
-  }
 }
 
-/* Touch-friendly interactive elements */
+/* Touch-friendly elements */
 @media (max-width: 768px) {
-  .expand-btn,
-  .pagination-btn,
-  .btn-refresh {
-    min-height: 44px;
-    min-width: 44px;
-  }
-
-  .message-text {
-    min-height: 44px;
-    display: flex;
-    align-items: center;
-  }
-
-  /* Improve tap targets */
-  .nav-item,
   .form-control,
-  select.form-control {
+  .btn-refresh,
+  .pagination-btn,
+  .action-btn {
     min-height: 44px;
   }
-}
 
-/* Improve modal responsiveness */
-@media (max-width: 768px) {
-  .modal-container {
-    width: 95%;
-    max-height: 85vh;
-    margin: 20px;
-  }
-  
-  .modal-header {
-    padding: 12px 15px;
-  }
-  
-  .modal-content {
-    padding: 15px;
-  }
-  
-  .modal-message {
-    font-size: 14px;
-  }
-  
   .modal-close-btn {
-    width: 40px;
-    height: 40px;
-    min-width: 40px;
-    min-height: 40px;
+    min-width: 44px;
+    min-height: 44px;
   }
-}
-
-.pagination-controls {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  background: white;
-  border-radius: 12px;
-  border: 1px solid #e5e5e5;
-}
-
-/* Desktop styles */
-@media (min-width: 769px) {
-  .pagination-controls {
-    padding: 20px;
-    margin-top: 20px;
-  }
-}
-
-.pagination-info {
-  font-size: 14px;
-  color: #666;
-  font-weight: 500;
-}
-
-.pagination-buttons {
-  display: flex;
-  gap: 8px;
-}
-
-.pagination-btn {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 40px;
-  height: 40px;
-  border-radius: 8px;
-  border: 1px solid #ddd;
-  background-color: white;
-  cursor: pointer;
-  transition: all 0.2s;
-  color: #666;
-}
-
-.pagination-btn:hover:not(:disabled) {
-  background-color: var(--free-primary-color, #E1000F);
-  color: white;
-  border-color: var(--free-primary-color, #E1000F);
-  transform: translateY(-1px);
-}
-
-.pagination-btn:disabled {
-  opacity: 0.4;
-  cursor: not-allowed;
-  background-color: #f5f5f5;
-}
-
-/* Modal styles */
-.modal-overlay {
-  position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background-color: rgba(0, 0, 0, 0.5);
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  z-index: 1000;
-  animation: fadeIn 0.2s ease;
-}
-
-.modal-container {
-  background-color: white;
-  border-radius: 8px;
-  width: 90%;
-  max-width: 600px;
-  max-height: 90vh;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
-  display: flex;
-  flex-direction: column;
-  animation: modalSlideIn 0.3s ease;
-}
-
-.modal-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 15px 20px;
-  border-bottom: 1px solid #eee;
-}
-
-.modal-header h3 {
-  margin: 0;
-  color: var(--free-primary-color, #E1000F);
-  font-weight: 600;
-  font-size: 18px;
-}
-
-.modal-close-btn {
-  background: none;
-  border: none;
-  cursor: pointer;
-  width: 32px;
-  height: 32px;
-  min-width: 32px;
-  min-height: 32px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  border-radius: 50%;
-  color: #666;
-  transition: all 0.2s ease;
-}
-
-.modal-close-btn:hover {
-  background-color: rgba(0, 0, 0, 0.05);
-  color: var(--free-primary-color, #E1000F);
-}
-
-.modal-content {
-  padding: 20px;
-  overflow-y: auto;
-  flex: 1;
-}
-
-.modal-message {
-  white-space: pre-wrap;
-  word-break: break-word;
-  font-size: 16px;
-  line-height: 1.5;
-  margin-bottom: 20px;
-}
-
-.modal-info {
-  border-top: 1px solid #eee;
-  padding-top: 15px;
-  color: #666;
-  font-size: 14px;
-}
-
-.modal-date {
-  font-style: italic;
-}
-
-@keyframes modalSlideIn {
-  from {
-    opacity: 0;
-    transform: translateY(-30px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
-@keyframes fadeIn {
-  from { opacity: 0; }
-  to { opacity: 1; }
-}
-
-:global(body.modal-open) {
-  overflow: hidden;
 }
 </style> 

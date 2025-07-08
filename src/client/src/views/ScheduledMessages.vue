@@ -492,12 +492,13 @@ export default {
 }
 
 .card, .scheduled-card {
-  background: white;
+  background: var(--free-card-background);
   border-radius: 10px;
   padding: 15px;
-  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 4px 10px var(--free-shadow);
   display: flex;
   flex-direction: column;
+  transition: background-color 0.3s ease, box-shadow 0.3s ease;
 }
 
 /* Desktop styles */
@@ -530,8 +531,8 @@ export default {
 
 .count-badge {
   margin-left: 10px;
-  background-color: #f0f0f0;
-  color: #666;
+  background-color: var(--free-background-color);
+  color: var(--free-text-color-secondary);
   border-radius: 12px;
   padding: 2px 8px;
   font-size: 0.8rem;
@@ -542,6 +543,7 @@ export default {
   display: flex;
   align-items: center;
   justify-content: center;
+  border: 1px solid var(--free-border-color);
 }
 
 .filter-section {
@@ -568,25 +570,25 @@ label {
   display: block;
   margin-bottom: 8px;
   font-weight: 600;
-  color: #333;
+  color: var(--free-text-color);
 }
 
 .form-control {
   width: 100%;
   padding: 12px 14px;
-  border: 1px solid #d1d5db;
+  border: 1px solid var(--free-border-color);
   border-radius: 6px;
   font-size: 14px;
   font-weight: 500;
-  color: #374151;
-  background-color: #ffffff;
-  transition: all 0.2s ease;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  color: var(--free-text-color);
+  background-color: var(--free-card-background);
+  transition: all 0.3s ease;
+  box-shadow: 0 1px 3px var(--free-shadow);
 }
 
 .form-control:hover {
-  border-color: #9ca3af;
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.12);
+  border-color: var(--free-primary-color);
+  box-shadow: 0 2px 6px var(--free-shadow);
 }
 
 .form-control:focus {
@@ -598,12 +600,28 @@ label {
 /* Enhanced Select Styling */
 select.form-control {
   cursor: pointer;
-  background-color: #ffffff;
+  background-color: var(--free-card-background);
+  color: var(--free-text-color);
+  /* Improve select appearance for dark mode */
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  appearance: none;
+  background-image: url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%23666666' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 12px center;
+  background-size: 16px;
+  padding-right: 40px;
+}
+
+/* Dark mode select arrow */
+:root.dark-theme select.form-control {
+  background-image: url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%23e0e0e0' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
 }
 
 select.form-control option {
   padding: 8px;
-  color: #374151;
+  color: var(--free-text-color);
+  background-color: var(--free-card-background);
 }
 
 .btn-refresh {
@@ -615,16 +633,16 @@ select.form-control option {
   min-width: 42px;
   min-height: 42px;
   border-radius: 4px;
-  border: 1px solid #ccc;
-  background-color: white;
+  border: 1px solid var(--free-border-color);
+  background-color: var(--free-card-background);
   cursor: pointer;
-  transition: all 0.2s;
+  transition: all 0.3s ease;
   color: var(--free-primary-color, #E1000F);
   box-sizing: border-box;
 }
 
 .btn-refresh:hover {
-  background-color: #f8f8f8;
+  background-color: var(--free-border-color);
 }
 
 .btn-refresh svg {
@@ -640,7 +658,7 @@ select.form-control option {
   align-items: center;
   justify-content: center;
   padding: 40px 0;
-  color: #666;
+  color: var(--free-text-color-secondary);
   flex: 1;
   width: 100%;
   min-height: 300px;
@@ -667,7 +685,7 @@ select.form-control option {
   align-items: center;
   justify-content: center;
   padding: 30px 0;
-  color: #666;
+  color: var(--free-text-color-secondary);
   flex: 1;
   width: 100%;
   min-height: 300px;
@@ -676,7 +694,7 @@ select.form-control option {
 
 .empty-state svg {
   margin-bottom: 15px;
-  color: #ccc;
+  color: var(--free-border-color);
   animation: floatAnimation 3s ease-in-out infinite;
   width: 48px;
   height: 48px;
@@ -691,7 +709,7 @@ select.form-control option {
 }
 
 .empty-state p {
-  color: #888;
+  color: var(--free-text-color-secondary);
   font-size: 16px;
   animation: fadeIn 1s ease;
 }

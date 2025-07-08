@@ -123,6 +123,15 @@ const handleDateChange = (value) => {
   --free-active-color: #E1000F15;
 }
 
+/* Dark theme support for datepicker */
+:root.dark-theme {
+  --free-primary-color: #FF1A2D;
+  --free-text-color: #e0e0e0;
+  --free-border-color: #404040;
+  --free-hover-color: #2a2a2a;
+  --free-active-color: rgba(255, 26, 45, 0.15);
+}
+
 /* Datepicker styling */
 .free-datepicker {
   width: 100%;
@@ -138,6 +147,7 @@ const handleDateChange = (value) => {
   width: 100%;
   transition: all 0.2s ease;
   color: var(--free-text-color);
+  background-color: var(--free-card-background);
 }
 
 .free-datepicker-input:focus {
@@ -150,10 +160,11 @@ const handleDateChange = (value) => {
 .free-datepicker-menu {
   border-radius: 8px;
   overflow: hidden;
-  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 4px 10px var(--free-shadow);
+  background-color: var(--free-card-background);
 }
 
-/* Customize the primary color for all datepicker elements */
+/* Light theme customization */
 .dp__theme_light {
   --dp-primary-color: var(--free-primary-color) !important;
   --dp-icon-color: var(--free-primary-color) !important;
@@ -161,6 +172,23 @@ const handleDateChange = (value) => {
   --dp-border-color-focus: var(--free-primary-color) !important;
   --dp-danger-color: var(--free-primary-color) !important;
   --dp-marker-color: var(--free-primary-color) !important;
+  --dp-background-color: var(--free-card-background) !important;
+  --dp-text-color: var(--free-text-color) !important;
+  --dp-hover-color: var(--free-hover-color) !important;
+}
+
+/* Dark theme customization */
+.dp__theme_dark {
+  --dp-primary-color: var(--free-primary-color) !important;
+  --dp-icon-color: var(--free-primary-color) !important;
+  --dp-border-color-hover: var(--free-primary-color) !important;
+  --dp-border-color-focus: var(--free-primary-color) !important;
+  --dp-danger-color: var(--free-primary-color) !important;
+  --dp-marker-color: var(--free-primary-color) !important;
+  --dp-background-color: var(--free-card-background) !important;
+  --dp-text-color: var(--free-text-color) !important;
+  --dp-hover-color: var(--free-hover-color) !important;
+  --dp-hover-text-color: var(--free-text-color) !important;
 }
 
 /* Active state styling */
@@ -172,6 +200,7 @@ const handleDateChange = (value) => {
 /* Hover styling */
 .dp__date_hover {
   background-color: var(--free-active-color) !important;
+  color: var(--free-text-color) !important;
 }
 
 /* Button styling */
@@ -197,5 +226,26 @@ const handleDateChange = (value) => {
 
 .dp__range_between {
   background-color: var(--free-active-color) !important;
+}
+
+/* Dark theme specific overrides */
+:root.dark-theme .dp__menu {
+  background-color: var(--free-card-background) !important;
+  border: 1px solid var(--free-border-color) !important;
+}
+
+:root.dark-theme .dp__calendar_header,
+:root.dark-theme .dp__calendar_header_item {
+  color: var(--free-text-color) !important;
+}
+
+:root.dark-theme .dp__cell_inner {
+  color: var(--free-text-color) !important;
+}
+
+:root.dark-theme .dp__input {
+  background-color: var(--free-card-background) !important;
+  color: var(--free-text-color) !important;
+  border-color: var(--free-border-color) !important;
 }
 </style> 

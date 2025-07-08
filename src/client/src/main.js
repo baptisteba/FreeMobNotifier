@@ -5,9 +5,14 @@ import Home from './views/Home.vue';
 import Settings from './views/Settings.vue';
 import MessageHistory from './views/MessageHistory.vue';
 import ScheduledMessages from './views/ScheduledMessages.vue';
+import { useTheme } from './composables/useTheme.js';
 
 // Import CSS
 import './assets/main.css';
+
+// Initialize theme
+const { initializeTheme } = useTheme();
+initializeTheme();
 
 // Create router
 const routes = [

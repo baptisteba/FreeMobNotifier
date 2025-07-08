@@ -25,6 +25,7 @@
           <label for="datetime">Date et heure d'envoi</label>
           <FreeDateTimePicker
             v-model="sendAt"
+            :dark="isDarkMode"
             :placeholder="'Sélectionnez une date et heure'"
             :format="formatDateTime"
           >
@@ -119,6 +120,7 @@ import axios from 'axios';
 import FreeDateTimePicker from '../components/FreeDateTimePicker.vue';
 import CalendarIcon from '../components/icons/CalendarIcon.vue';
 import TimeIcon from '../components/icons/TimeIcon.vue';
+import { useTheme } from '../composables/useTheme.js';
 
 export default {
   components: {
@@ -129,6 +131,7 @@ export default {
   setup() {
     const router = useRouter();
     const route = useRoute();
+    const { isDarkMode } = useTheme();
     
     const message = ref('');
     const sendAt = ref(null); // Empty by default
@@ -268,6 +271,7 @@ export default {
     };
     
     return {
+      isDarkMode,
       message,
       sendAt,
       recurrence,
@@ -311,11 +315,12 @@ export default {
 }
 
 .card {
-  background: white;
+  background: var(--free-card-background);
   border-radius: 10px;
   padding: 25px;
-  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 4px 10px var(--free-shadow);
   margin-bottom: 20px;
+  transition: background-color 0.3s ease, box-shadow 0.3s ease;
 }
 
 .form-group {
@@ -336,7 +341,7 @@ label {
   display: block;
   margin-bottom: 8px;
   font-weight: 600;
-  color: #333;
+  color: var(--free-text-color);
 }
 
 .form-control {

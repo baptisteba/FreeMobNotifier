@@ -60,13 +60,14 @@ export default {
 
 <style scoped>
 .navbar {
-  background-color: white;
-  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+  background-color: var(--free-navbar-background);
+  box-shadow: 0 2px 10px var(--free-shadow);
   position: fixed;
   bottom: 0;
   left: 0;
   width: 100%;
   z-index: 1000;
+  transition: background-color 0.3s ease, box-shadow 0.3s ease;
 }
 
 .navbar-container {
@@ -107,15 +108,17 @@ export default {
   min-width: 0;
 }
 
+
+
 .nav-item {
   display: flex;
   flex-direction: column;
   align-items: center;
   padding: 6px 8px;
-  color: #666;
+  color: var(--free-text-color-secondary);
   text-decoration: none;
   border-radius: 8px;
-  transition: all 0.2s;
+  transition: all 0.3s ease;
   flex-shrink: 0;
   min-width: 0;
 }
@@ -154,6 +157,11 @@ export default {
     justify-content: space-around;
     width: 100%;
   }
+  
+  .theme-toggle {
+    padding: 6px;
+    order: -1; /* Place theme toggle at the beginning on mobile */
+  }
 }
 
 /* Very small mobile devices */
@@ -185,6 +193,16 @@ export default {
     font-size: 0.6rem;
     margin-top: 1px;
   }
+  
+  .theme-toggle {
+    padding: 4px;
+    flex-shrink: 0;
+  }
+  
+  .theme-toggle svg {
+    width: 18px;
+    height: 18px;
+  }
 }
 
 /* Small mobile devices */
@@ -208,6 +226,10 @@ export default {
   .nav-text {
     font-size: 0.62rem;
   }
+  
+  .theme-toggle {
+    padding: 5px;
+  }
 }
 
 /* Medium mobile devices */
@@ -225,6 +247,10 @@ export default {
   
   .nav-item {
     padding: 8px 10px;
+  }
+  
+  .theme-toggle {
+    padding: 8px;
   }
 }
 
@@ -248,28 +274,11 @@ export default {
   
   .nav-item {
     padding: 8px;
-    border-radius: 50%;
-    width: 40px;
-    height: 40px;
-    justify-content: center;
   }
   
-  .nav-text {
-    display: none;
-  }
-  
-  .nav-icon {
-    width: 20px;
-    height: 20px;
-  }
-  
-  .logo-text {
-    display: inline;
-    margin-left: 8px;
-  }
-  
-  .install-pwa-button {
-    margin-right: 10px;
+  .theme-toggle {
+    padding: 8px;
+    margin-right: 8px;
   }
 }
 </style> 
