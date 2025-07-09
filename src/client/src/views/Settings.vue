@@ -103,7 +103,7 @@
               <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="btn-icon">
                 <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon>
               </svg>
-              {{ isTesting ? 'Test en cours...' : 'Tester la configuration' }}
+              {{ isTesting ? 'Envoi du test...' : 'Envoyer un SMS de test' }}
             </button>
           </div>
         </form>
@@ -313,15 +313,20 @@ export default {
         
         const response = await axios.post('/api/settings/test');
         
-        successMessage.value = 'Test réussi ! Un SMS de test a été envoyé à votre téléphone.';
+        // Use the message from the backend response
+        successMessage.value = response.data.message || 'Test réussi ! Un SMS de notification a été envoyé à votre téléphone.';
         
-        // Clear success message after 5 seconds
+        // Clear success message after 8 seconds (longer for notification)
         setTimeout(() => {
           successMessage.value = '';
-        }, 5000);
+        }, 8000);
       } catch (error) {
         console.error('Error testing settings:', error);
-        errorMessage.value = error.response?.data?.error || 'Le test a échoué. Vérifiez vos identifiants.';
+        
+        // Use error messages from backend
+        const errorMsg = error.response?.data?.message || error.response?.data?.error || 'Le test a échoué. Vérifiez vos identifiants.';
+        
+        errorMessage.value = errorMsg;
       } finally {
         isTesting.value = false;
       }

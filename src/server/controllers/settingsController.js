@@ -1,4 +1,5 @@
 const Setting = require('../models/Setting');
+const freeMobileService = require('../services/freeMobileService');
 
 // Get current settings
 const getSettings = async (req, res) => {
@@ -53,7 +54,47 @@ const updateSettings = async (req, res) => {
   }
 };
 
+// Test SMS configuration by sending a test notification
+const testSettings = async (req, res) => {
+  try {
+    const testMessage = "Test de configuration Freemobnotifier Reussi";
+    
+    // Send the test message using the same process as "Envoyer maintenant"
+    const result = await freeMobileService.sendSMS(testMessage);
+    
+    // Create a record of the test message
+    const Message = require('../models/Message');
+    const testRecord = new Message({
+      content: testMessage,
+      recurrence: 'none',
+      status: result.success ? 'sent' : 'failed',
+      error: result.success ? null : result.message,
+      lastSent: result.success ? new Date() : null
+    });
+    
+    await testRecord.save();
+    
+    if (result.success) {
+      res.json({
+        success: true,
+        message: 'Test notification sent successfully',
+        data: testRecord
+      });
+    } else {
+      res.status(result.status).json({
+        success: false,
+        message: result.message,
+        data: testRecord
+      });
+    }
+  } catch (error) {
+    console.error('Error testing settings:', error);
+    res.status(500).json({ error: 'Failed to test settings' });
+  }
+};
+
 module.exports = {
   getSettings,
-  updateSettings
+  updateSettings,
+  testSettings
 }; 

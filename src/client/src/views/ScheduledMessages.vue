@@ -734,16 +734,16 @@ select.form-control option {
 }
 
 .scheduled-message-card {
-  background: white;
+  background: var(--free-card-background);
   border-radius: 12px;
-  border: 1px solid #e5e5e5;
+  border: 1px solid var(--free-border-color);
   overflow: hidden;
-  transition: all 0.2s ease;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+  transition: all 0.2s ease, background-color 0.3s ease, border-color 0.3s ease;
+  box-shadow: 0 2px 8px var(--free-shadow);
 }
 
 .scheduled-message-card:hover {
-  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
+  box-shadow: 0 4px 16px var(--free-shadow);
   transform: translateY(-1px);
 }
 
@@ -804,13 +804,14 @@ select.form-control option {
 
 .scheduled-message-content {
   padding: 20px;
-  background: white;
+  background: var(--free-card-background);
+  transition: background-color 0.3s ease;
 }
 
 .message-text {
   font-size: 16px;
   line-height: 1.5;
-  color: #333;
+  color: var(--free-text-color);
   margin-bottom: 12px;
   cursor: pointer;
   display: flex;
@@ -818,13 +819,13 @@ select.form-control option {
   gap: 8px;
   padding: 12px;
   border-radius: 8px;
-  background: #f8f9fa;
-  transition: background-color 0.2s;
+  background: var(--free-background-color);
+  transition: background-color 0.3s ease, color 0.3s ease;
   word-break: break-word;
 }
 
 .message-text:hover {
-  background: #e9ecef;
+  background: var(--free-border-color);
 }
 
 .expand-btn {
@@ -850,9 +851,10 @@ select.form-control option {
 
 .message-details {
   padding: 12px;
-  background-color: #f1f3f4;
+  background-color: var(--free-background-color);
   border-radius: 6px;
   margin-top: 8px;
+  transition: background-color 0.3s ease;
 }
 
 .detail-row {
@@ -871,21 +873,24 @@ select.form-control option {
 }
 
 .detail-icon {
-  color: #666;
+  color: var(--free-text-color-secondary);
   flex-shrink: 0;
   width: 14px;
   height: 14px;
+  transition: color 0.3s ease;
 }
 
 .detail-value {
   flex: 1;
-  color: #333;
+  color: var(--free-text-color);
+  transition: color 0.3s ease;
 }
 
 .detail-value.compact {
   font-weight: 500;
-  color: #555;
+  color: var(--free-text-color-secondary);
   font-size: 12px;
+  transition: color 0.3s ease;
 }
 
 /* Pagination Controls */
@@ -893,9 +898,10 @@ select.form-control option {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  background: white;
+  background: var(--free-card-background);
   border-radius: 12px;
-  border: 1px solid #e5e5e5;
+  border: 1px solid var(--free-border-color);
+  transition: background-color 0.3s ease, border-color 0.3s ease;
 }
 
 /* Desktop styles */
@@ -908,8 +914,9 @@ select.form-control option {
 
 .pagination-info {
   font-size: 14px;
-  color: #666;
+  color: var(--free-text-color-secondary);
   font-weight: 500;
+  transition: color 0.3s ease;
 }
 
 .pagination-buttons {
@@ -924,11 +931,11 @@ select.form-control option {
   width: 40px;
   height: 40px;
   border-radius: 8px;
-  border: 1px solid #ddd;
-  background-color: white;
+  border: 1px solid var(--free-border-color);
+  background-color: var(--free-card-background);
   cursor: pointer;
-  transition: all 0.2s;
-  color: #666;
+  transition: all 0.3s ease;
+  color: var(--free-text-color-secondary);
 }
 
 .pagination-btn:hover:not(:disabled) {
@@ -941,7 +948,7 @@ select.form-control option {
 .pagination-btn:disabled {
   opacity: 0.4;
   cursor: not-allowed;
-  background-color: #f5f5f5;
+  background-color: var(--free-background-color);
 }
 
 /* Modal Styles */
@@ -960,14 +967,15 @@ select.form-control option {
 }
 
 .modal-container {
-  background: white;
+  background: var(--free-card-background);
   border-radius: 16px;
   max-width: 90%;
   max-height: 80%;
   width: 500px;
-  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+  box-shadow: 0 20px 60px var(--free-shadow);
   overflow: hidden;
   animation: modalFadeIn 0.3s ease;
+  transition: background-color 0.3s ease;
 }
 
 @keyframes modalFadeIn {
@@ -986,15 +994,17 @@ select.form-control option {
   justify-content: space-between;
   align-items: center;
   padding: 20px;
-  background: #f8f9fa;
-  border-bottom: 1px solid #e9ecef;
+  background: var(--free-background-color);
+  border-bottom: 1px solid var(--free-border-color);
+  transition: background-color 0.3s ease, border-color 0.3s ease;
 }
 
 .modal-header h3 {
   margin: 0;
   font-size: 1.2rem;
-  color: #333;
+  color: var(--free-text-color);
   font-weight: 600;
+  transition: color 0.3s ease;
 }
 
 .modal-close-btn {
@@ -1007,39 +1017,44 @@ select.form-control option {
   width: 32px;
   height: 32px;
   border-radius: 50%;
-  color: #666;
-  transition: all 0.2s;
+  color: var(--free-text-color-secondary);
+  transition: all 0.3s ease;
 }
 
 .modal-close-btn:hover {
-  background-color: #e9ecef;
-  color: #333;
+  background-color: var(--free-border-color);
+  color: var(--free-text-color);
 }
 
 .modal-content {
   padding: 20px;
+  background: var(--free-card-background);
+  transition: background-color 0.3s ease;
 }
 
 .modal-message {
   font-size: 16px;
   line-height: 1.6;
-  color: #333;
+  color: var(--free-text-color);
   white-space: pre-wrap;
   word-break: break-word;
   margin-bottom: 16px;
   max-height: 300px;
   overflow-y: auto;
+  transition: color 0.3s ease;
 }
 
 .modal-info {
   padding-top: 16px;
-  border-top: 1px solid #e9ecef;
+  border-top: 1px solid var(--free-border-color);
+  transition: border-color 0.3s ease;
 }
 
 .modal-date {
   font-size: 14px;
-  color: #666;
+  color: var(--free-text-color-secondary);
   font-weight: 500;
+  transition: color 0.3s ease;
 }
 
 /* Prevent body scroll when modal is open */
