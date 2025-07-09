@@ -159,6 +159,148 @@
         </div>
       </div>
     </div>
+
+    <!-- Data Management Section -->
+    <div class="card">
+      <h2 class="card-title">
+        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="card-icon">
+          <path d="M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5L14.5 2z"></path>
+          <polyline points="14 2 14 8 20 8"></polyline>
+          <line x1="16" y1="13" x2="8" y2="13"></line>
+          <line x1="16" y1="17" x2="8" y2="17"></line>
+          <line x1="10" y1="9" x2="8" y2="9"></line>
+        </svg>
+        Gestion des données
+      </h2>
+      
+      <p class="api-info">
+        Gérez l'historique de vos messages et les données de l'application.
+      </p>
+      
+      <div class="form-actions">
+        <button 
+          type="button" 
+          class="btn-danger"
+          @click="showClearHistoryModal = true"
+          :disabled="isClearingHistory"
+        >
+          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="btn-icon">
+            <path d="M3 6h18"></path>
+            <path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"></path>
+            <path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"></path>
+          </svg>
+          {{ isClearingHistory ? 'Suppression...' : 'Vider l\'historique des messages' }}
+        </button>
+      </div>
+    </div>
+
+    <!-- Clear History Confirmation Modal -->
+    <div v-if="showClearHistoryModal" class="modal-overlay" @click="showClearHistoryModal = false">
+      <div class="modal-container" @click.stop>
+        <div class="modal-header">
+          <h3>Confirmer la suppression</h3>
+          <button 
+            type="button" 
+            class="close-btn"
+            @click="showClearHistoryModal = false"
+          >
+            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <line x1="18" y1="6" x2="6" y2="18"></line>
+              <line x1="6" y1="6" x2="18" y2="18"></line>
+            </svg>
+          </button>
+        </div>
+        
+        <div class="modal-content">
+          <div class="warning-icon">
+            <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path>
+              <line x1="12" y1="9" x2="12" y2="13"></line>
+              <line x1="12" y1="17" x2="12.01" y2="17"></line>
+            </svg>
+          </div>
+          
+          <p class="modal-message">
+            Que souhaitez-vous supprimer ?
+          </p>
+          
+          <div class="clear-options">
+            <div class="option">
+              <input 
+                type="radio" 
+                id="clear-sent" 
+                name="clearType" 
+                value="sent" 
+                v-model="clearType"
+                class="option-radio"
+              />
+              <label for="clear-sent" class="option-label">
+                <div class="option-info">
+                  <div class="option-title">Historique des messages envoyés</div>
+                  <div class="option-description">Supprimer uniquement les messages déjà envoyés (réussis et échoués)</div>
+                </div>
+              </label>
+            </div>
+            
+            <div class="option">
+              <input 
+                type="radio" 
+                id="clear-scheduled" 
+                name="clearType" 
+                value="scheduled" 
+                v-model="clearType"
+                class="option-radio"
+              />
+              <label for="clear-scheduled" class="option-label">
+                <div class="option-info">
+                  <div class="option-title">Messages programmés</div>
+                  <div class="option-description">Supprimer uniquement les messages en attente d'envoi</div>
+                </div>
+              </label>
+            </div>
+            
+            <div class="option">
+              <input 
+                type="radio" 
+                id="clear-all" 
+                name="clearType" 
+                value="all" 
+                v-model="clearType"
+                class="option-radio"
+              />
+              <label for="clear-all" class="option-label">
+                <div class="option-info">
+                  <div class="option-title">Tout supprimer</div>
+                  <div class="option-description">Supprimer tous les messages (envoyés et programmés)</div>
+                </div>
+              </label>
+            </div>
+          </div>
+          
+          <p class="modal-warning">
+            Cette action est <strong>irréversible</strong> et supprimera définitivement les messages sélectionnés.
+          </p>
+        </div>
+        
+        <div class="modal-actions">
+          <button 
+            type="button" 
+            class="btn-secondary"
+            @click="showClearHistoryModal = false"
+          >
+            Annuler
+          </button>
+          <button 
+            type="button" 
+            class="btn-danger"
+            @click="clearHistory"
+            :disabled="isClearingHistory"
+          >
+            {{ isClearingHistory ? 'Suppression...' : 'Oui, vider l\'historique' }}
+          </button>
+        </div>
+      </div>
+    </div>
     
     <div v-if="successMessage" class="success-message">
       {{ successMessage }}
@@ -197,6 +339,9 @@ export default {
     const lastUpdated = ref(null);
     const successMessage = ref('');
     const errorMessage = ref('');
+    const showClearHistoryModal = ref(false);
+    const isClearingHistory = ref(false);
+    const clearType = ref('all');
     
     // Check if API is configured
     const isConfigured = computed(() => {
@@ -337,6 +482,32 @@ export default {
       setTheme(theme);
     };
     
+    // Clear message history
+    const clearHistory = async () => {
+      try {
+        isClearingHistory.value = true;
+        
+        const response = await axios.delete('/api/messages', {
+          params: { type: clearType.value }
+        });
+        
+        showClearHistoryModal.value = false;
+        successMessage.value = `${response.data.message} ! ${response.data.deletedCount} message(s) supprimé(s).`;
+        
+        // Clear success message after 5 seconds
+        setTimeout(() => {
+          successMessage.value = '';
+        }, 5000);
+      } catch (error) {
+        console.error('Error clearing history:', error);
+        
+        showClearHistoryModal.value = false;
+        errorMessage.value = error.response?.data?.error || 'Impossible de vider l\'historique';
+      } finally {
+        isClearingHistory.value = false;
+      }
+    };
+    
     // Load settings on mount
     onMounted(loadSettings);
     
@@ -356,7 +527,11 @@ export default {
       isConfigured,
       formatDate,
       saveSettings,
-      testSettings
+      testSettings,
+      showClearHistoryModal,
+      isClearingHistory,
+      clearType,
+      clearHistory
     };
   }
 };
@@ -505,7 +680,7 @@ label {
   justify-content: center;
 }
 
-.btn-primary, .btn-secondary {
+.btn-primary, .btn-secondary, .btn-danger {
   padding: 12px 24px;
   border-radius: 4px;
   border: none;
@@ -539,7 +714,18 @@ label {
   background-color: var(--free-border-color);
 }
 
-.btn-primary:disabled, .btn-secondary:disabled {
+.btn-danger {
+  background-color: var(--free-error-color, #dc3545);
+  color: white;
+  border: 1px solid var(--free-error-color, #dc3545);
+}
+
+.btn-danger:hover {
+  background-color: #c82333;
+  border-color: #c82333;
+}
+
+.btn-primary:disabled, .btn-secondary:disabled, .btn-danger:disabled {
   background-color: var(--free-border-color);
   cursor: not-allowed;
   opacity: 0.6;
@@ -547,6 +733,182 @@ label {
 
 .btn-icon {
   flex-shrink: 0;
+}
+
+/* Modal Styles */
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  padding: 20px;
+}
+
+.modal-container {
+  background: var(--free-card-background);
+  border-radius: 12px;
+  max-width: 500px;
+  width: 100%;
+  max-height: 90vh;
+  overflow-y: auto;
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+  position: relative;
+}
+
+.modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 20px 24px;
+  border-bottom: 1px solid var(--free-border-color);
+}
+
+.modal-header h3 {
+  margin: 0;
+  color: var(--free-text-color);
+  font-size: 1.25rem;
+  font-weight: 600;
+}
+
+.close-btn {
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: var(--free-text-color-secondary);
+  padding: 4px;
+  border-radius: 4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: color 0.3s ease, background-color 0.3s ease;
+}
+
+.close-btn:hover {
+  color: var(--free-text-color);
+  background-color: var(--free-border-color);
+}
+
+.modal-content {
+  padding: 24px;
+  text-align: center;
+}
+
+.warning-icon {
+  color: var(--free-error-color, #dc3545);
+  margin-bottom: 16px;
+}
+
+.modal-message {
+  font-size: 1.1rem;
+  font-weight: 500;
+  color: var(--free-text-color);
+  margin-bottom: 12px;
+}
+
+.modal-warning {
+  color: var(--free-text-color-secondary);
+  line-height: 1.5;
+  margin-bottom: 0;
+}
+
+.modal-actions {
+  display: flex;
+  gap: 12px;
+  padding: 20px 24px;
+  border-top: 1px solid var(--free-border-color);
+  justify-content: flex-end;
+}
+
+.modal-actions .btn-secondary,
+.modal-actions .btn-danger {
+  padding: 10px 20px;
+  font-size: 0.95rem;
+  min-width: 120px;
+  justify-content: center;
+}
+
+/* Clear Options Styles */
+.clear-options {
+  margin: 20px 0;
+  text-align: left;
+}
+
+.option {
+  margin-bottom: 16px;
+  position: relative;
+}
+
+.option:last-child {
+  margin-bottom: 0;
+}
+
+.option-radio {
+  position: absolute;
+  left: -9999px;
+  opacity: 0;
+  width: 0;
+  height: 0;
+  margin: 0;
+  cursor: pointer;
+}
+
+.option-label {
+  display: block;
+  padding: 16px 20px;
+  background-color: var(--free-background-color);
+  border: 2px solid var(--free-border-color);
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  position: relative;
+}
+
+.option-label:hover {
+  border-color: var(--free-primary-color);
+  background-color: rgba(225, 0, 15, 0.02);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(225, 0, 15, 0.1);
+}
+
+.option-radio:checked + .option-label {
+  border-color: var(--free-primary-color);
+  background-color: rgba(225, 0, 15, 0.08);
+  box-shadow: 0 0 0 3px rgba(225, 0, 15, 0.1);
+}
+
+.option-radio:checked + .option-label::before {
+  content: '✓';
+  position: absolute;
+  top: 50%;
+  right: 20px;
+  transform: translateY(-50%);
+  color: var(--free-primary-color);
+  font-weight: bold;
+  font-size: 1.2rem;
+}
+
+.option-info {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.option-title {
+  font-weight: 600;
+  color: var(--free-text-color);
+  font-size: 1rem;
+}
+
+.option-description {
+  color: var(--free-text-color-secondary);
+  font-size: 0.9rem;
+  line-height: 1.4;
 }
 
 .last-updated {
@@ -712,7 +1074,7 @@ label {
     flex-direction: column;
   }
 
-  .btn-primary, .btn-secondary {
+  .btn-primary, .btn-secondary, .btn-danger {
     width: 100%;
     padding: 14px 16px;
     font-size: 16px;
@@ -773,6 +1135,81 @@ label {
   .theme-description p {
     font-size: 12px;
   }
+
+  /* Modal mobile styles */
+  .modal-overlay {
+    padding: 10px;
+  }
+
+  .modal-container {
+    max-width: 100%;
+    border-radius: 8px;
+  }
+
+  .modal-header {
+    padding: 16px;
+  }
+
+  .modal-header h3 {
+    font-size: 1.1rem;
+  }
+
+  .modal-content {
+    padding: 16px;
+  }
+
+  .warning-icon svg {
+    width: 36px;
+    height: 36px;
+  }
+
+  .modal-message {
+    font-size: 1rem;
+  }
+
+  .modal-warning {
+    font-size: 14px;
+  }
+
+  .modal-actions {
+    padding: 16px;
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .modal-actions .btn-secondary,
+  .modal-actions .btn-danger {
+    width: 100%;
+    min-height: 44px;
+    padding: 12px 16px;
+    font-size: 16px;
+  }
+
+  /* Mobile clear options */
+  .clear-options {
+    margin: 16px 0;
+  }
+
+  .option {
+    margin-bottom: 12px;
+  }
+
+  .option-label {
+    padding: 12px 16px;
+    border-radius: 6px;
+    min-height: 44px;
+    display: flex;
+    align-items: center;
+  }
+
+  .option-title {
+    font-size: 0.95rem;
+  }
+
+  .option-description {
+    font-size: 0.85rem;
+    line-height: 1.3;
+  }
 }
 
 /* Small mobile devices (361px - 480px) */
@@ -798,7 +1235,7 @@ label {
     font-size: 16px; /* Prevents zoom */
   }
 
-  .btn-primary, .btn-secondary {
+  .btn-primary, .btn-secondary, .btn-danger {
     min-height: 44px;
     width: 100%;
   }
@@ -822,6 +1259,20 @@ label {
     width: 18px;
     height: 18px;
   }
+
+  /* Mobile clear options for small devices */
+  .option-label {
+    padding: 10px 16px;
+    min-height: 44px;
+  }
+
+  .option-title {
+    font-size: 0.9rem;
+  }
+
+  .option-description {
+    font-size: 0.8rem;
+  }
 }
 
 /* Medium mobile devices and tablets (481px - 767px) */
@@ -831,8 +1282,14 @@ label {
     gap: 15px;
   }
 
-  .btn-primary, .btn-secondary {
+  .btn-primary, .btn-secondary, .btn-danger {
     min-width: 180px;
+  }
+
+  /* Medium mobile clear options */
+  .option-label {
+    padding: 14px 18px;
+    min-height: 44px;
   }
 }
 
@@ -842,7 +1299,7 @@ label {
     flex-direction: column;
   }
   
-  .btn-primary, .btn-secondary {
+  .btn-primary, .btn-secondary, .btn-danger {
     width: 100%;
     justify-content: center;
   }
@@ -855,6 +1312,7 @@ label {
   .form-control,
   .btn-primary,
   .btn-secondary,
+  .btn-danger,
   .toggle-visibility-btn {
     min-height: 44px;
   }
@@ -870,6 +1328,12 @@ label {
 
   .theme-selector {
     gap: 10px;
+  }
+
+  /* Touch-friendly clear options */
+  .option-label {
+    min-height: 44px;
+    padding: 12px 18px;
   }
 }
 </style> 

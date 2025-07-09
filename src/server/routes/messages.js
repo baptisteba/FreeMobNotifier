@@ -20,4 +20,7 @@ router.put('/:id', messagesController.updateMessage);
 // Delete a message
 router.delete('/:id', messagesController.deleteMessage);
 
+// Clear all messages history
+router.delete('/', messagesController.clearHistory);
+
 module.exports = router; 

@@ -183,11 +183,50 @@ const deleteMessage = async (req, res) => {
   }
 };
 
+// Clear messages history with options
+const clearHistory = async (req, res) => {
+  try {
+    const { type = 'all' } = req.query;
+    
+    let query = {};
+    let messageType = '';
+    
+    switch (type) {
+      case 'sent':
+        query = { status: { $in: ['sent', 'failed'] } };
+        messageType = 'historique des messages envoyés';
+        break;
+      case 'scheduled':
+        query = { status: 'pending' };
+        messageType = 'messages programmés';
+        break;
+      case 'all':
+      default:
+        query = {};
+        messageType = 'historique complet';
+        break;
+    }
+    
+    const result = await Message.deleteMany(query);
+    
+    res.json({
+      success: true,
+      message: `${messageType} vidé avec succès`,
+      deletedCount: result.deletedCount,
+      type: type
+    });
+  } catch (error) {
+    console.error('Error clearing message history:', error);
+    res.status(500).json({ error: 'Failed to clear message history' });
+  }
+};
+
 module.exports = {
   getMessages,
   getMessage,
   sendMessage,
   scheduleMessage,
   updateMessage,
-  deleteMessage
+  deleteMessage,
+  clearHistory
 }; 
