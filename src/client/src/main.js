@@ -80,38 +80,76 @@ window.addEventListener('appinstalled', (e) => {
   app.config.globalProperties.$pwa.canInstall = false;
 });
 
-// Register service worker
+// Register service worker with auto-update
 if ('serviceWorker' in navigator) {
+  // Track if we're refreshing to avoid infinite loops
+  let refreshing = false;
+
+  // Auto-reload when new service worker takes control
+  navigator.serviceWorker.addEventListener('controllerchange', () => {
+    if (!refreshing) {
+      console.log('PWA: New version available, reloading...');
+      refreshing = true;
+      window.location.reload();
+    }
+  });
+
+  // Listen for update messages from service worker
+  navigator.serviceWorker.addEventListener('message', (event) => {
+    console.log('Message from service worker:', event.data);
+
+    if (event.data && event.data.type === 'SW_UPDATED') {
+      console.log(`PWA: Updated to version ${event.data.version}`);
+    }
+  });
+
   window.addEventListener('load', async () => {
     try {
-      const registration = await navigator.serviceWorker.register('/sw.js');
+      const registration = await navigator.serviceWorker.register('/sw.js', {
+        updateViaCache: 'none' // Always check for SW updates
+      });
       console.log('Service Worker registered successfully:', registration.scope);
-      
+
+      // Check for updates immediately
+      registration.update();
+
+      // Check for updates periodically (every 60 seconds when app is active)
+      setInterval(() => {
+        registration.update();
+        console.log('PWA: Checking for updates...');
+      }, 60000);
+
       // Handle service worker updates
       registration.addEventListener('updatefound', () => {
         const newWorker = registration.installing;
+        console.log('PWA: Update found, installing new version...');
+
         newWorker.addEventListener('statechange', () => {
           if (newWorker.state === 'installed') {
             if (navigator.serviceWorker.controller) {
-              // New service worker available
-              console.log('New service worker available');
-              // Optionally show update notification to user
+              // New service worker ready - will auto-reload via controllerchange
+              console.log('PWA: New version ready');
             } else {
               // First time service worker installed
-              console.log('Service worker installed for the first time');
+              console.log('PWA: App ready for offline use');
             }
           }
         });
       });
-      
+
     } catch (error) {
       console.error('Service Worker registration failed:', error);
     }
   });
-  
-  // Listen for service worker messages
-  navigator.serviceWorker.addEventListener('message', (event) => {
-    console.log('Message from service worker:', event.data);
+
+  // Check for updates when app becomes visible again
+  document.addEventListener('visibilitychange', () => {
+    if (document.visibilityState === 'visible' && navigator.serviceWorker.controller) {
+      navigator.serviceWorker.ready.then((registration) => {
+        registration.update();
+        console.log('PWA: Checking for updates (app visible)');
+      });
+    }
   });
 }
 

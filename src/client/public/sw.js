@@ -1,23 +1,17 @@
-const CACHE_NAME = 'freemobnotifier-v1.0.0';
+// Auto-generated version based on build time - change this to trigger update
+const APP_VERSION = '1.1.0';
+const BUILD_TIME = new Date().toISOString();
+const CACHE_NAME = `freemobnotifier-v${APP_VERSION}`;
+
 const urlsToCache = [
   '/',
   '/index.html',
-  '/src/main.js',
-  '/src/App.vue',
-  '/src/assets/main.css',
-  '/src/views/Home.vue',
-  '/src/views/Settings.vue',
-  '/src/views/MessageHistory.vue',
-  '/src/views/ScheduledMessages.vue',
-  '/src/components/Navbar.vue',
-  '/src/components/FreeDateTimePicker.vue',
-  '/src/services/api.js',
   '/manifest.json'
 ];
 
-// Install event - cache resources
+// Install event - cache resources and skip waiting immediately
 self.addEventListener('install', (event) => {
-  console.log('Service Worker: Install event triggered');
+  console.log(`Service Worker: Install event (v${APP_VERSION})`);
   event.waitUntil(
     caches.open(CACHE_NAME)
       .then((cache) => {
@@ -25,7 +19,7 @@ self.addEventListener('install', (event) => {
         return cache.addAll(urlsToCache);
       })
       .then(() => {
-        console.log('Service Worker: All files cached');
+        console.log('Service Worker: Skip waiting to activate immediately');
         return self.skipWaiting();
       })
       .catch((error) => {
@@ -34,92 +28,149 @@ self.addEventListener('install', (event) => {
   );
 });
 
-// Activate event - clean up old caches
+// Activate event - clean up old caches and claim clients immediately
 self.addEventListener('activate', (event) => {
-  console.log('Service Worker: Activate event triggered');
+  console.log(`Service Worker: Activate event (v${APP_VERSION})`);
   event.waitUntil(
-    caches.keys().then((cacheNames) => {
-      return Promise.all(
-        cacheNames.map((cacheName) => {
-          if (cacheName !== CACHE_NAME) {
-            console.log('Service Worker: Deleting old cache', cacheName);
-            return caches.delete(cacheName);
-          }
-        })
-      );
-    }).then(() => {
-      console.log('Service Worker: Claiming clients');
-      return self.clients.claim();
-    })
+    caches.keys()
+      .then((cacheNames) => {
+        return Promise.all(
+          cacheNames.map((cacheName) => {
+            if (cacheName !== CACHE_NAME) {
+              console.log('Service Worker: Deleting old cache', cacheName);
+              return caches.delete(cacheName);
+            }
+          })
+        );
+      })
+      .then(() => {
+        console.log('Service Worker: Claiming all clients');
+        return self.clients.claim();
+      })
+      .then(() => {
+        // Notify all clients that update is complete
+        return self.clients.matchAll().then((clients) => {
+          clients.forEach((client) => {
+            client.postMessage({
+              type: 'SW_UPDATED',
+              version: APP_VERSION
+            });
+          });
+        });
+      })
   );
 });
 
-// Fetch event - serve cached content when offline
+// Fetch event - Network First strategy for HTML, Cache First for assets
 self.addEventListener('fetch', (event) => {
   // Skip non-GET requests
   if (event.request.method !== 'GET') {
     return;
   }
 
-  // Skip API requests for live data
+  // Skip API requests - always fetch from network
   if (event.request.url.includes('/api/')) {
     return;
   }
 
+  const url = new URL(event.request.url);
+
+  // Network First for HTML documents (ensures fresh content)
+  if (event.request.destination === 'document' ||
+      url.pathname === '/' ||
+      url.pathname.endsWith('.html')) {
+    event.respondWith(
+      fetch(event.request)
+        .then((response) => {
+          // Clone and cache the fresh response
+          const responseToCache = response.clone();
+          caches.open(CACHE_NAME).then((cache) => {
+            cache.put(event.request, responseToCache);
+          });
+          return response;
+        })
+        .catch(() => {
+          // Fallback to cache if offline
+          return caches.match(event.request);
+        })
+    );
+    return;
+  }
+
+  // Stale While Revalidate for JS/CSS assets
+  if (event.request.destination === 'script' ||
+      event.request.destination === 'style' ||
+      url.pathname.includes('/assets/')) {
+    event.respondWith(
+      caches.open(CACHE_NAME).then((cache) => {
+        return cache.match(event.request).then((cachedResponse) => {
+          const fetchPromise = fetch(event.request).then((networkResponse) => {
+            cache.put(event.request, networkResponse.clone());
+            return networkResponse;
+          }).catch(() => cachedResponse);
+
+          return cachedResponse || fetchPromise;
+        });
+      })
+    );
+    return;
+  }
+
+  // Cache First for other assets (images, fonts)
   event.respondWith(
     caches.match(event.request)
       .then((response) => {
-        // Return cached version or fetch from network
         if (response) {
-          console.log('Service Worker: Serving from cache', event.request.url);
           return response;
         }
 
-        console.log('Service Worker: Fetching from network', event.request.url);
         return fetch(event.request)
           .then((response) => {
-            // Check if we received a valid response
             if (!response || response.status !== 200 || response.type !== 'basic') {
               return response;
             }
 
-            // Clone the response
             const responseToCache = response.clone();
-
-            caches.open(CACHE_NAME)
-              .then((cache) => {
-                cache.put(event.request, responseToCache);
-              });
+            caches.open(CACHE_NAME).then((cache) => {
+              cache.put(event.request, responseToCache);
+            });
 
             return response;
           })
           .catch((error) => {
             console.error('Service Worker: Fetch failed', error);
-            
-            // Return offline page if available
-            if (event.request.destination === 'document') {
-              return caches.match('/offline.html');
-            }
           });
       })
   );
+});
+
+// Handle messages from clients
+self.addEventListener('message', (event) => {
+  if (event.data && event.data.type === 'SKIP_WAITING') {
+    console.log('Service Worker: Received skip waiting message');
+    self.skipWaiting();
+  }
+
+  if (event.data && event.data.type === 'GET_VERSION') {
+    event.ports[0].postMessage({
+      version: APP_VERSION,
+      buildTime: BUILD_TIME
+    });
+  }
 });
 
 // Background sync for offline message sending
 self.addEventListener('sync', (event) => {
   if (event.tag === 'background-sync') {
     console.log('Service Worker: Background sync triggered');
-    event.waitUntil(
-      // Handle background sync for sending messages when back online
-      syncOfflineMessages()
-    );
+    event.waitUntil(syncOfflineMessages());
   }
 });
 
 // Push notification handling
 self.addEventListener('push', (event) => {
   console.log('Service Worker: Push event triggered');
-  
+
   const options = {
     body: event.data ? event.data.text() : 'New notification from FreeMobNotifier',
     icon: '/icons/icon-192x192.png',
@@ -151,7 +202,7 @@ self.addEventListener('push', (event) => {
 // Notification click handling
 self.addEventListener('notificationclick', (event) => {
   console.log('Service Worker: Notification click event triggered');
-  
+
   event.notification.close();
 
   if (event.action === 'explore') {
@@ -164,9 +215,8 @@ self.addEventListener('notificationclick', (event) => {
 // Helper function to sync offline messages
 async function syncOfflineMessages() {
   try {
-    // Get offline messages from IndexedDB or localStorage
     const offlineMessages = await getOfflineMessages();
-    
+
     if (offlineMessages && offlineMessages.length > 0) {
       for (const message of offlineMessages) {
         try {
@@ -177,7 +227,7 @@ async function syncOfflineMessages() {
             },
             body: JSON.stringify(message)
           });
-          
+
           if (response.ok) {
             await removeOfflineMessage(message.id);
             console.log('Service Worker: Offline message sent successfully');
@@ -194,7 +244,6 @@ async function syncOfflineMessages() {
 
 // Helper functions for offline message management
 async function getOfflineMessages() {
-  // This would typically use IndexedDB
   return JSON.parse(localStorage.getItem('offlineMessages') || '[]');
 }
 
@@ -202,4 +251,4 @@ async function removeOfflineMessage(messageId) {
   const messages = await getOfflineMessages();
   const updatedMessages = messages.filter(msg => msg.id !== messageId);
   localStorage.setItem('offlineMessages', JSON.stringify(updatedMessages));
-} 
+}
