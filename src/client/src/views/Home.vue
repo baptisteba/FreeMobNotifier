@@ -104,13 +104,9 @@
             <FreeDateTimePicker
               v-model="sendAt"
               :dark="isDarkMode"
-              :placeholder="'Sélectionnez une date et heure'"
-              :format="formatDateTime"
-            >
-              <template #inputIcon>
-                <CalendarIcon />
-              </template>
-            </FreeDateTimePicker>
+              datePlaceholder="Choisir une date"
+              timePlaceholder="Choisir une heure"
+            />
             <div v-if="dateError" class="error-message">{{ dateError }}</div>
           </div>
         </div>
@@ -408,7 +404,6 @@ export default {
       isScheduling,
       errorMessage,
       successMessage,
-      formatDateTime,
       toggleWeekDay,
       setRecurrence,
       sendMessage,

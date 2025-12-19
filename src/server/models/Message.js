@@ -9,9 +9,10 @@ class Message {
     this.sendAt = data.sendAt || null;
     this.recurrence = data.recurrence || 'none';
     this.recurrenceConfig = data.recurrenceConfig || {};
-    this.status = data.status || 'pending';
+    this.status = data.status || 'pending'; // pending, sent, failed, error
     this.lastSent = data.lastSent || null;
     this.error = data.error || null;
+    this.retryCount = data.retryCount || 0; // Track retry attempts (max 5)
     this.originalRecurringMessageId = data.originalRecurringMessageId || null;
     this.createdAt = data.createdAt || new Date();
     this.updatedAt = data.updatedAt || new Date();
@@ -92,6 +93,7 @@ class Message {
             status: this.status,
             lastSent: this.lastSent,
             error: this.error,
+            retryCount: this.retryCount,
             originalRecurringMessageId: this.originalRecurringMessageId,
             updatedAt: this.updatedAt
           }
@@ -109,6 +111,7 @@ class Message {
           status: this.status,
           lastSent: this.lastSent,
           error: this.error,
+          retryCount: this.retryCount,
           originalRecurringMessageId: this.originalRecurringMessageId,
           createdAt: this.createdAt,
           updatedAt: this.updatedAt

@@ -31,36 +31,50 @@ const getMessage = async (req, res) => {
 const sendMessage = async (req, res) => {
   try {
     const { content } = req.body;
-    
+
     if (!content) {
       return res.status(400).json({ error: 'Message content is required' });
     }
-    
-    // Send the message
+
+    // Send the message (with automatic retries)
     const result = await freeMobileService.sendSMS(content);
-    
+
+    // Determine final status based on result
+    let status = 'sent';
+    if (!result.success) {
+      if (result.maxRetriesReached || !result.retryable) {
+        status = 'error';
+      } else {
+        status = 'failed';
+      }
+    }
+
     // Create a record of the message
     const message = new Message({
       content,
       recurrence: 'none',
-      status: result.success ? 'sent' : 'failed',
+      status: status,
       error: result.success ? null : result.message,
-      lastSent: result.success ? new Date() : null
+      lastSent: result.success ? new Date() : null,
+      retryCount: result.retryCount || 0
     });
-    
+
     await message.save();
-    
+
     if (result.success) {
       res.json({
         success: true,
         message: 'Message sent successfully',
-        data: message
+        data: message,
+        retryCount: result.retryCount || 0
       });
     } else {
-      res.status(result.status).json({
+      res.status(result.status || 500).json({
         success: false,
         message: result.message,
-        data: message
+        data: message,
+        retryCount: result.retryCount || 0,
+        maxRetriesReached: result.maxRetriesReached || false
       });
     }
   } catch (error) {

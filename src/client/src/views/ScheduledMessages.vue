@@ -73,13 +73,27 @@
       <div v-else class="scheduled-messages-container">
         <div class="scheduled-message-list">
           <div v-for="message in paginatedScheduledMessages" :key="message._id" class="scheduled-message-card">
-            <div class="scheduled-message-header">
-              <div class="message-status pending">
-                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="pending-icon">
+            <div class="scheduled-message-header" :class="'status-header-' + message.status">
+              <div class="message-status" :class="message.status">
+                <!-- Pending icon -->
+                <svg v-if="message.status === 'pending'" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="status-icon">
                   <circle cx="12" cy="12" r="10"></circle>
                   <polyline points="12 6 12 12 16 14"></polyline>
                 </svg>
-                <span>En attente</span>
+                <!-- Failed icon -->
+                <svg v-else-if="message.status === 'failed'" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="status-icon">
+                  <circle cx="12" cy="12" r="10"></circle>
+                  <line x1="12" y1="8" x2="12" y2="12"></line>
+                  <line x1="12" y1="16" x2="12.01" y2="16"></line>
+                </svg>
+                <!-- Error icon -->
+                <svg v-else-if="message.status === 'error'" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="status-icon">
+                  <circle cx="12" cy="12" r="10"></circle>
+                  <line x1="15" y1="9" x2="9" y2="15"></line>
+                  <line x1="9" y1="9" x2="15" y2="15"></line>
+                </svg>
+                <span>{{ getStatusInfo(message.status).label }}</span>
+                <span v-if="message.retryCount > 0" class="retry-badge">{{ message.retryCount }}/5</span>
               </div>
               <div class="message-actions">
                 <button @click="deleteMessage(message._id)" class="action-btn delete-btn" title="Supprimer">
@@ -216,9 +230,11 @@ export default {
     const currentPage = ref(1);
     const itemsPerPage = ref(7); // Number of items to show per page
     
-    // Computed properties for pending messages
+    // Computed properties for pending/failed/error messages (schedulable messages)
     const pendingMessages = computed(() => {
-      return messages.value.filter(msg => msg.status === 'pending');
+      return messages.value.filter(msg =>
+        msg.status === 'pending' || msg.status === 'failed' || msg.status === 'error'
+      );
     });
     
     const filteredPendingMessages = computed(() => {
@@ -412,8 +428,25 @@ export default {
         'status-pending': message.status === 'pending',
         'status-sent': message.status === 'sent',
         'status-failed': message.status === 'failed',
+        'status-error': message.status === 'error',
         'status-cancelled': message.status === 'cancelled'
       };
+    };
+
+    // Get status display info
+    const getStatusInfo = (status) => {
+      switch (status) {
+        case 'pending':
+          return { label: 'En attente', class: 'pending', icon: 'clock' };
+        case 'sent':
+          return { label: 'Envoye', class: 'sent', icon: 'check' };
+        case 'failed':
+          return { label: 'Echec (nouvelle tentative)', class: 'failed', icon: 'alert' };
+        case 'error':
+          return { label: 'Erreur definitive', class: 'error', icon: 'error' };
+        default:
+          return { label: status, class: 'pending', icon: 'clock' };
+      }
     };
     
     // Delete a message
@@ -455,6 +488,7 @@ export default {
       formatCompactDate,
       formatRecurrence,
       messageStatusClass,
+      getStatusInfo,
       isMessageTruncated,
       getTruncatedMessage,
       toggleMessageExpand,
@@ -756,7 +790,20 @@ select.form-control option {
   color: white;
 }
 
-.message-status.pending {
+/* Status header colors */
+.status-header-pending {
+  background: linear-gradient(135deg, #ffc107 0%, #ff9800 100%);
+}
+
+.status-header-failed {
+  background: linear-gradient(135deg, #ff9800 0%, #f57c00 100%);
+}
+
+.status-header-error {
+  background: linear-gradient(135deg, #f44336 0%, #d32f2f 100%);
+}
+
+.message-status {
   display: flex;
   align-items: center;
   gap: 8px;
@@ -765,8 +812,23 @@ select.form-control option {
   color: white;
 }
 
-.pending-icon {
+.message-status.pending,
+.message-status.failed,
+.message-status.error {
   color: white;
+}
+
+.status-icon {
+  color: white;
+}
+
+.retry-badge {
+  background-color: rgba(255, 255, 255, 0.2);
+  padding: 2px 8px;
+  border-radius: 12px;
+  font-size: 12px;
+  font-weight: 500;
+  margin-left: 4px;
 }
 
 .message-actions {

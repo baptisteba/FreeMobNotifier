@@ -58,33 +58,47 @@ const updateSettings = async (req, res) => {
 const testSettings = async (req, res) => {
   try {
     const testMessage = "Test de configuration Freemobnotifier Reussi";
-    
+
     // Send the test message using the same process as "Envoyer maintenant"
     const result = await freeMobileService.sendSMS(testMessage);
-    
+
+    // Determine final status based on result
+    let status = 'sent';
+    if (!result.success) {
+      if (result.maxRetriesReached || !result.retryable) {
+        status = 'error';
+      } else {
+        status = 'failed';
+      }
+    }
+
     // Create a record of the test message
     const Message = require('../models/Message');
     const testRecord = new Message({
       content: testMessage,
       recurrence: 'none',
-      status: result.success ? 'sent' : 'failed',
+      status: status,
       error: result.success ? null : result.message,
-      lastSent: result.success ? new Date() : null
+      lastSent: result.success ? new Date() : null,
+      retryCount: result.retryCount || 0
     });
-    
+
     await testRecord.save();
-    
+
     if (result.success) {
       res.json({
         success: true,
         message: 'Test notification sent successfully',
-        data: testRecord
+        data: testRecord,
+        retryCount: result.retryCount || 0
       });
     } else {
-      res.status(result.status).json({
+      res.status(result.status || 500).json({
         success: false,
         message: result.message,
-        data: testRecord
+        data: testRecord,
+        retryCount: result.retryCount || 0,
+        maxRetriesReached: result.maxRetriesReached || false
       });
     }
   } catch (error) {
