@@ -38,4 +38,4 @@ yarn-error.log*
 pnpm-debug.log*
 
 # MongoDB
-data/ 
+data/ .claude/
