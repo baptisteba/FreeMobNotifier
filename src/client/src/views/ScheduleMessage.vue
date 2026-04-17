@@ -278,7 +278,7 @@ export default {
         
         // Navigate to home after 2 seconds
         setTimeout(() => {
-          router.push('/today');
+          router.push('/');
         }, 2000);
       } catch (error) {
         console.error('Error scheduling message:', error);
@@ -289,7 +289,7 @@ export default {
     };
     
     const goBack = () => {
-      router.push('/today');
+      router.push('/');
     };
     
     return {

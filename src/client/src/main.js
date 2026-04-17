@@ -17,9 +17,9 @@ initializeTheme();
 
 // Create router
 const routes = [
-  { path: '/', redirect: '/today' },
+  { path: '/', component: Home },
+  { path: '/compose', redirect: '/' },
   { path: '/today', component: Today },
-  { path: '/compose', component: Home },
   { path: '/settings', component: Settings },
   { path: '/history', component: MessageHistory },
   { path: '/scheduled', component: ScheduledMessages }

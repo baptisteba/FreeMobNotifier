@@ -31,7 +31,7 @@
           <line x1="3" y1="10" x2="21" y2="10"></line>
         </svg>
         <p>Aucun rappel aujourd'hui</p>
-        <router-link to="/compose" class="btn btn-primary">Programmer un message</router-link>
+        <router-link to="/" class="btn btn-primary">Programmer un message</router-link>
       </div>
 
       <div v-else>
@@ -85,7 +85,7 @@
     </div>
 
     <div class="quick-actions">
-      <router-link to="/compose" class="btn btn-primary">Nouveau message</router-link>
+      <router-link to="/" class="btn btn-primary">Nouveau message</router-link>
       <router-link to="/scheduled" class="btn btn-secondary">Tous les messages programmés</router-link>
     </div>
   </div>
@@ -177,6 +177,9 @@ export default {
   max-width: 800px;
   margin: 0 auto;
   padding: 20px 15px;
+  color: var(--free-text-color);
+  background-color: var(--free-background-color);
+  transition: background-color 0.3s ease, color 0.3s ease;
 }
 
 .page-title {
@@ -187,6 +190,7 @@ export default {
   margin-bottom: 16px;
   color: var(--free-text-color);
   flex-wrap: wrap;
+  transition: color 0.3s ease;
 }
 
 .page-icon {
@@ -203,6 +207,10 @@ export default {
 
 .today-card {
   margin-bottom: 16px;
+  background-color: var(--free-card-background);
+  color: var(--free-text-color);
+  border: 1px solid var(--free-border-color);
+  transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease;
 }
 
 .card-title {
