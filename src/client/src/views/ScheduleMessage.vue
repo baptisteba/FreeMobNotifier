@@ -8,16 +8,27 @@
     <div class="card">
       <div class="form-group">
         <label for="message">Message</label>
-        <textarea 
-          id="message" 
-          v-model="message" 
-          class="form-control" 
-          placeholder="Votre message (max 160 caractères)" 
-          maxlength="160"
-          :class="{'is-invalid': messageError}"
+        <textarea
+          id="message"
+          v-model="message"
+          class="form-control"
+          placeholder="Votre message (max 160 caractères)"
+          maxlength="320"
+          :class="{'is-invalid': messageError || messageOverLimit}"
         ></textarea>
         <div v-if="messageError" class="error-message">{{ messageError }}</div>
-        <div class="char-count">{{ message.length }}/160</div>
+        <div class="char-count" :class="{'over-limit': messageOverLimit}">
+          {{ messageSanitized.length }}/160
+          <span v-if="message.length !== messageSanitized.length" class="char-count-raw">
+            (saisi : {{ message.length }})
+          </span>
+        </div>
+        <p v-if="messageOverLimit" class="error-message">
+          Le message dépasse 160 caractères après conversion ASCII. Raccourcissez-le.
+        </p>
+        <p v-else-if="messageSanitizedDiffers" class="sanitize-preview">
+          Envoi : <em>{{ messageSanitized }}</em>
+        </p>
       </div>
 
       <div class="form-row">
@@ -81,7 +92,7 @@
             @click="toggleWeekDay(index)"
             :class="['day-btn', selectedDaysOfWeek.includes(index) ? 'active' : '']"
           >
-            {{ day.substr(0, 1) }}
+            {{ day.substr(0, 2) }}
           </button>
         </div>
       </div>
@@ -98,7 +109,7 @@
         <button @click="goBack" class="btn-secondary">
           <i class="fas fa-arrow-left"></i> Annuler
         </button>
-        <button @click="scheduleMessage" class="btn-primary" :disabled="isSending">
+        <button @click="scheduleMessage" class="btn-primary" :disabled="isSending || messageOverLimit || !message.trim()">
           <i class="fas fa-paper-plane"></i> {{ isSending ? 'Envoi en cours...' : 'Programmer' }}
         </button>
       </div>
@@ -121,6 +132,7 @@ import FreeDateTimePicker from '../components/FreeDateTimePicker.vue';
 import CalendarIcon from '../components/icons/CalendarIcon.vue';
 import TimeIcon from '../components/icons/TimeIcon.vue';
 import { useTheme } from '../composables/useTheme.js';
+import { sanitizeMessage as sanitizeSms, MAX_SMS_LENGTH } from '../utils/sanitize.js';
 
 export default {
   components: {
@@ -146,7 +158,13 @@ export default {
     const isSending = ref(false);
     
     const weekDays = ['Dimanche', 'Lundi', 'Mardi', 'Mercredi', 'Jeudi', 'Vendredi', 'Samedi'];
-    
+
+    const messageSanitized = computed(() => sanitizeSms(message.value));
+    const messageSanitizedDiffers = computed(() =>
+      message.value.trim() !== '' && messageSanitized.value !== message.value
+    );
+    const messageOverLimit = computed(() => messageSanitized.value.length > MAX_SMS_LENGTH);
+
     // Initialize message from query parameter if present
     onMounted(() => {
       if (route.query.message) {
@@ -200,6 +218,9 @@ export default {
       if (!message.value.trim()) {
         messageError.value = 'Le message est requis';
         isValid = false;
+      } else if (messageOverLimit.value) {
+        messageError.value = `Le message fait ${messageSanitized.value.length} caractères après conversion (max 160).`;
+        isValid = false;
       }
       
       if (!sendAt.value) {
@@ -231,6 +252,7 @@ export default {
         const dateObj = new Date(sendAt.value);
         recurrenceConfig.hour = dateObj.getHours();
         recurrenceConfig.minute = dateObj.getMinutes();
+        recurrenceConfig.timezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
       }
       
       // Prepare request data
@@ -256,7 +278,7 @@ export default {
         
         // Navigate to home after 2 seconds
         setTimeout(() => {
-          router.push('/');
+          router.push('/today');
         }, 2000);
       } catch (error) {
         console.error('Error scheduling message:', error);
@@ -267,7 +289,7 @@ export default {
     };
     
     const goBack = () => {
-      router.push('/');
+      router.push('/today');
     };
     
     return {
@@ -283,6 +305,9 @@ export default {
       errorMessage,
       successMessage,
       isSending,
+      messageSanitized,
+      messageSanitizedDiffers,
+      messageOverLimit,
       formatDateTime,
       toggleWeekDay,
       setRecurrence,
@@ -364,8 +389,31 @@ textarea.form-control {
 .char-count {
   text-align: right;
   font-size: 12px;
-  color: #666;
+  color: var(--free-text-color-secondary);
   margin-top: 4px;
+}
+
+.char-count.over-limit {
+  color: var(--free-error-color);
+  font-weight: 600;
+}
+
+.char-count-raw {
+  font-size: 0.75rem;
+  color: var(--free-text-color-secondary);
+  font-weight: 400;
+  margin-left: 4px;
+}
+
+.sanitize-preview {
+  font-size: 0.8rem;
+  color: var(--free-text-color-secondary);
+  margin: 4px 0 0;
+  padding: 6px 10px;
+  background: var(--free-background-color);
+  border-radius: 6px;
+  border: 1px dashed var(--free-border-color);
+  overflow-wrap: anywhere;
 }
 
 .toggle-group {

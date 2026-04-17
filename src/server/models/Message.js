@@ -13,6 +13,7 @@ class Message {
     this.lastSent = data.lastSent || null;
     this.error = data.error || null;
     this.retryCount = data.retryCount || 0; // Track retry attempts (max 5)
+    this.retryAfter = data.retryAfter || null; // Earliest time the retry job may re-attempt
     this.originalRecurringMessageId = data.originalRecurringMessageId || null;
     this.createdAt = data.createdAt || new Date();
     this.updatedAt = data.updatedAt || new Date();
@@ -94,11 +95,12 @@ class Message {
             lastSent: this.lastSent,
             error: this.error,
             retryCount: this.retryCount,
+            retryAfter: this.retryAfter,
             originalRecurringMessageId: this.originalRecurringMessageId,
             updatedAt: this.updatedAt
           }
         };
-        
+
         await db.messages.update(query, update, { upsert: true });
         return this;
       } else {
@@ -112,11 +114,12 @@ class Message {
           lastSent: this.lastSent,
           error: this.error,
           retryCount: this.retryCount,
+          retryAfter: this.retryAfter,
           originalRecurringMessageId: this.originalRecurringMessageId,
           createdAt: this.createdAt,
           updatedAt: this.updatedAt
         };
-        
+
         const newMessage = await db.messages.insert(data);
         this._id = newMessage._id;
         // Only update timestamps if they weren't explicitly provided

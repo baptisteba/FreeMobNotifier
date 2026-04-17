@@ -6,22 +6,25 @@ A modern, mobile-optimized Progressive Web App (PWA) for sending SMS notificatio
 
 - 📤 **Immediate SMS sending** with real-time feedback
 - 🕒 **Advanced scheduling** with one-time and recurring messages
-- 🔁 **Flexible recurrence options** (daily, weekly, monthly)
+- 🔁 **Flexible recurrence options** (daily, weekly, monthly) — timezone-aware, DST-safe
+- ✏️ **Edit scheduled messages in place** (no delete + recreate)
+- 📅 **Today view** — landing page shows reminders firing today with live "in X min" / "il y a X min" labels
 - 📋 **Separate dedicated views** for different message types
 - 🔍 **Smart search and filtering** with pagination
-- 📱 **Progressive Web App (PWA)** - installable on all devices
-- 🌙 **Full dark mode support** with automatic theme switching
-- 🎨 **Modern theming system** with smooth transitions
-- 📱 **Mobile-first responsive design** optimized for all devices
+- 📱 **Progressive Web App (PWA)** - installable on all devices, safe-area aware on iOS
+- 🌙 **Full dark mode support** with WCAG-AA contrast
+- 🧯 **Startup catch-up** — one-time messages whose `sendAt` passed during downtime are sent on restart
+- 🔁 **Smart retry** — 402 rate-limits back off 60–120 s with jitter; `retryAfter` persisted so the retry cron respects it
+- 🛡️ **Hardened process** — unhandled rejections log and exit for clean supervisor restart
+- 📱 **Mobile-first responsive design** with 44 px touch targets
 - ⚙️ **Secure credential management** with test functionality
 - 🗄️ **Local file-based database** (no external database required)
-- 🎨 **Modern card-based interface** with touch-friendly navigation
-- ⏰ **Smart date formatting** and compact message display
 - 📈 **Complete message tracking** with individual history for recurring messages
 - 🔄 **Persistent recurring schedules** that maintain active status
+- ✅ **Input validation** — rejects bad recurrence configs, invalid timezones, and messages that exceed 160 chars after ASCII sanitization (œ→oe, …→..., emoji dropped)
 - 🌐 **Offline functionality** with intelligent caching
 - 🔄 **Background sync** for sending messages when back online
-- 📲 **Install prompt** for native app-like experience
+- 📲 **Install prompt** with styled in-app instructions for iOS (replaces native alert)
 
 ## 🌙 Dark Mode & Theming
 
@@ -63,23 +66,32 @@ FreeMobNotifier is a full-featured PWA that can be installed like a native app:
 
 ## 🚀 Application Structure
 
-FreeMobNotifier features a clean, intuitive interface with four main sections:
+FreeMobNotifier features a clean, intuitive interface:
 
-### 🏠 Accueil (Home)
+### 📅 Aujourd'hui (Today) — default landing page
+At-a-glance view of what fires today:
+- **Upcoming reminders** with relative time (`dans 2h 15`) and absolute time
+- **Past firings today** shown dimmed for context
+- **5 most recent sent messages**
+- Quick links to compose or to the scheduled list
+
+### ✏️ Composer (Compose)
 Central hub for sending and scheduling messages with two tabs:
 
 **📤 Envoyer maintenant (Send Now)**
 - Compose and send SMS messages immediately
-- Real-time character counter (160 chars max)
+- **Sanitized-length counter** (e.g. `œuf` counts as 3 chars, because Free Mobile needs ASCII and `œ` expands to `oe`)
+- **Live preview** of the sanitized message when accents or special chars are present
+- Over-limit state disables send and shows a clear warning
 - Instant delivery feedback
 
 **⏰ Programmer (Schedule)**
 - Create scheduled messages with **custom FreeDateTimePicker component**
 - **Dark mode aware** date picker with theme integration
 - **One-time messages**: Set specific date and time
-- **Recurring options**:
+- **Recurring options** (timezone-aware — the browser's IANA zone is stored with the schedule so DST shifts don't move your reminders):
   - **Daily**: Send every day at specified time
-  - **Weekly**: Choose specific days of the week
+  - **Weekly**: Choose specific days of the week (two-letter labels on mobile)
   - **Monthly**: Select day of the month
 - Visual recurrence configuration with toggle buttons
 
@@ -98,7 +110,9 @@ Separate management view for **pending/scheduled messages**:
 - **Enhanced filter controls** with dark mode styling
 - Filter by recurrence type (daily, weekly, monthly, one-time)
 - Compact date display with contextual formatting
+- **Edit in place** — modify content, time, recurrence, or weekday selection without recreating the schedule
 - Delete scheduled messages with confirmation
+- Recurrence line shows the stored timezone (e.g. `Hebdomadaire (Lundi) à 09:00 (Europe/Paris)`)
 - Real-time status updates
 - **Custom dropdown styling** with theme-aware arrows
 
@@ -186,6 +200,11 @@ FreeMobNotifier is built with a **mobile-first approach**:
    ```bash
    # Build client and start server (production-like)
    npm run dev
+
+   # Run the Vitest suite (sanitize, scheduler, validator)
+   npm test
+   npm run test:watch
+
    
    # Run frontend and backend separately
    npm run dev:server  # Backend only

@@ -45,7 +45,7 @@ export default {
 
 /* Variables CSS pour le thème sombre */
 :root.dark-theme {
-  --free-primary-color: #FF1A2D;
+  --free-primary-color: #FF5864;
   --free-secondary-color: #e0e0e0;
   --free-background-color: #1a1a1a;
   --free-border-color: #404040;
@@ -53,7 +53,7 @@ export default {
   --free-warning-color: #FFA726;
   --free-error-color: #F66859;
   --free-text-color: #e0e0e0;
-  --free-text-color-secondary: #b0b0b0;
+  --free-text-color-secondary: #c8c8c8;
   --free-card-background: #2a2a2a;
   --free-navbar-background: #2a2a2a;
   --free-footer-background: #1f1f1f;
@@ -84,11 +84,11 @@ body {
 
 .main-content {
   flex: 1;
-  padding-bottom: 80px; /* Space for bottom navigation on mobile */
+  padding-bottom: calc(80px + env(safe-area-inset-bottom));
   background-color: var(--free-background-color);
   color: var(--free-text-color);
   transition: background-color 0.3s ease, color 0.3s ease;
-  min-height: calc(100vh - 140px); /* Ensure content fills available space */
+  min-height: calc(100vh - 140px);
 }
 
 /* Desktop adjustments */
@@ -209,6 +209,10 @@ body {
   outline: none;
   border-color: var(--free-primary-color);
   box-shadow: 0 0 0 3px rgba(225, 0, 15, 0.1);
+}
+
+:root.dark-theme .form-control:focus {
+  box-shadow: 0 0 0 3px rgba(255, 88, 100, 0.3);
 }
 
 /* Card styles */

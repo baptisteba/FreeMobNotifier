@@ -96,6 +96,18 @@
                 <span v-if="message.retryCount > 0" class="retry-badge">{{ message.retryCount }}/5</span>
               </div>
               <div class="message-actions">
+                <button
+                  v-if="message.status === 'pending'"
+                  @click="openEdit(message)"
+                  class="action-btn edit-btn"
+                  title="Modifier"
+                  aria-label="Modifier le message"
+                >
+                  <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M12 20h9"></path>
+                    <path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"></path>
+                  </svg>
+                </button>
                 <button @click="deleteMessage(message._id)" class="action-btn delete-btn" title="Supprimer">
                   <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                     <polyline points="3 6 5 6 21 6"></polyline>
@@ -211,14 +223,22 @@
         </div>
       </div>
     </div>
+
+    <EditMessageModal
+      :message="editingMessage"
+      @close="closeEdit"
+      @saved="onEditSaved"
+    />
   </div>
 </template>
 
 <script>
 import { ref, onMounted, onUnmounted, computed, watch } from 'vue';
 import axios from 'axios';
+import EditMessageModal from '../components/EditMessageModal.vue';
 
 export default {
+  components: { EditMessageModal },
   setup() {
     const messages = ref([]);
     const isLoading = ref(true);
@@ -313,6 +333,7 @@ export default {
     const fetchMessages = async () => {
       try {
         isLoading.value = true;
+        messages.value = [];
         const response = await axios.get('/api/messages');
         messages.value = response.data;
         currentPage.value = 1; // Reset to first page when fetching new data
@@ -418,7 +439,11 @@ export default {
         const minute = String(config.minute).padStart(2, '0');
         result += ` à ${hour}:${minute}`;
       }
-      
+
+      if (config.timezone) {
+        result += ` (${config.timezone})`;
+      }
+
       return result;
     };
     
@@ -475,6 +500,21 @@ export default {
     // Modal state
     const modalMessage = ref(null);
     const modalDate = ref(null);
+
+    // Edit modal state
+    const editingMessage = ref(null);
+    const openEdit = (msg) => {
+      editingMessage.value = msg;
+      document.body.classList.add('modal-open');
+    };
+    const closeEdit = () => {
+      editingMessage.value = null;
+      document.body.classList.remove('modal-open');
+    };
+    const onEditSaved = async () => {
+      closeEdit();
+      await fetchMessages();
+    };
     
     return {
       messages,
@@ -497,7 +537,11 @@ export default {
       changePage,
       modalMessage,
       modalDate,
-      closeModal
+      closeModal,
+      editingMessage,
+      openEdit,
+      closeEdit,
+      onEditSaved
     };
   }
 };
@@ -786,21 +830,22 @@ select.form-control option {
   justify-content: space-between;
   align-items: center;
   padding: 16px 20px;
-  background: linear-gradient(135deg, #ffc107 0%, #ff9800 100%);
+  background: var(--free-warning-color);
   color: white;
 }
 
-/* Status header colors */
+/* Status header colors — flat theme tokens so dark mode stays readable */
 .status-header-pending {
-  background: linear-gradient(135deg, #ffc107 0%, #ff9800 100%);
+  background: var(--free-warning-color);
 }
 
 .status-header-failed {
-  background: linear-gradient(135deg, #ff9800 0%, #f57c00 100%);
+  background: var(--free-warning-color);
+  filter: brightness(0.9);
 }
 
 .status-header-error {
-  background: linear-gradient(135deg, #f44336 0%, #d32f2f 100%);
+  background: var(--free-error-color);
 }
 
 .message-status {
@@ -1038,6 +1083,12 @@ select.form-control option {
   overflow: hidden;
   animation: modalFadeIn 0.3s ease;
   transition: background-color 0.3s ease;
+}
+
+@media (max-width: 480px) {
+  .modal-container {
+    box-shadow: 0 4px 12px var(--free-shadow);
+  }
 }
 
 @keyframes modalFadeIn {

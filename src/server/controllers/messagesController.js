@@ -1,6 +1,7 @@
 const Message = require('../models/Message');
 const schedulerService = require('../services/schedulerService');
 const freeMobileService = require('../services/freeMobileService');
+const { validateMessagePayload } = require('../validators/messageValidator');
 
 // Get all messages
 const getMessages = async (req, res) => {
@@ -32,8 +33,11 @@ const sendMessage = async (req, res) => {
   try {
     const { content } = req.body;
 
-    if (!content) {
-      return res.status(400).json({ error: 'Message content is required' });
+    const validationError = validateMessagePayload(
+      { content, recurrence: 'none', sendAt: new Date().toISOString() }
+    );
+    if (validationError) {
+      return res.status(400).json({ error: validationError });
     }
 
     // Send the message (with automatic retries)
@@ -87,47 +91,12 @@ const sendMessage = async (req, res) => {
 const scheduleMessage = async (req, res) => {
   try {
     const { content, sendAt, recurrence, recurrenceConfig } = req.body;
-    
-    if (!content) {
-      return res.status(400).json({ error: 'Message content is required' });
+
+    const validationError = validateMessagePayload(req.body);
+    if (validationError) {
+      return res.status(400).json({ error: validationError });
     }
-    
-    // For one-time messages, sendAt is required
-    if (recurrence === 'none' && !sendAt) {
-      return res.status(400).json({ error: 'Send date is required for one-time messages' });
-    }
-    
-    // For recurring messages, check if recurrenceConfig is valid
-    if (recurrence !== 'none') {
-      if (!recurrenceConfig) {
-        return res.status(400).json({ error: 'Recurrence configuration is required' });
-      }
-      
-      // Validate configuration based on recurrence type
-      switch (recurrence) {
-        case 'daily':
-          if (recurrenceConfig.hour === undefined || recurrenceConfig.minute === undefined) {
-            return res.status(400).json({ error: 'Hour and minute are required for daily recurrence' });
-          }
-          break;
-          
-        case 'weekly':
-          if (!recurrenceConfig.daysOfWeek || !recurrenceConfig.daysOfWeek.length || 
-              recurrenceConfig.hour === undefined || recurrenceConfig.minute === undefined) {
-            return res.status(400).json({ error: 'Days of week, hour, and minute are required for weekly recurrence' });
-          }
-          break;
-          
-        case 'monthly':
-          if (recurrenceConfig.dayOfMonth === undefined || 
-              recurrenceConfig.hour === undefined || recurrenceConfig.minute === undefined) {
-            return res.status(400).json({ error: 'Day of month, hour, and minute are required for monthly recurrence' });
-          }
-          break;
-      }
-    }
-    
-    // Create the message
+
     const messageData = {
       content,
       sendAt: sendAt ? new Date(sendAt) : null,
@@ -135,9 +104,9 @@ const scheduleMessage = async (req, res) => {
       recurrenceConfig: recurrenceConfig || {},
       status: 'pending'
     };
-    
+
     const message = await schedulerService.scheduleMessage(messageData);
-    
+
     res.status(201).json({
       success: true,
       message: 'Message scheduled successfully',
@@ -153,21 +122,31 @@ const scheduleMessage = async (req, res) => {
 const updateMessage = async (req, res) => {
   try {
     const { content, sendAt, recurrence, recurrenceConfig, status } = req.body;
-    
+
     const message = await Message.findById(req.params.id);
     if (!message) {
       return res.status(404).json({ error: 'Message not found' });
     }
-    
-    // Only update fields that are provided
-    if (content) message.content = content;
-    if (sendAt) message.sendAt = new Date(sendAt);
-    if (recurrence) message.recurrence = recurrence;
-    if (recurrenceConfig) message.recurrenceConfig = recurrenceConfig;
-    if (status) message.status = status;
-    
+
+    if (message.status !== 'pending') {
+      return res.status(409).json({
+        error: 'Only pending messages can be edited'
+      });
+    }
+
+    const validationError = validateMessagePayload(req.body, { partial: true });
+    if (validationError) {
+      return res.status(400).json({ error: validationError });
+    }
+
+    if (content !== undefined) message.content = content;
+    if (sendAt !== undefined) message.sendAt = sendAt ? new Date(sendAt) : null;
+    if (recurrence !== undefined) message.recurrence = recurrence;
+    if (recurrenceConfig !== undefined) message.recurrenceConfig = recurrenceConfig;
+    if (status !== undefined) message.status = status;
+
     await message.save();
-    
+
     res.json({
       success: true,
       message: 'Message updated successfully',

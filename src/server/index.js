@@ -8,6 +8,15 @@ const settingsRoutes = require('./routes/settings');
 const messagesRoutes = require('./routes/messages');
 const schedulerService = require('./services/schedulerService');
 
+process.on('unhandledRejection', (reason) => {
+  console.error('[unhandledRejection]', reason);
+  process.exit(1);
+});
+process.on('uncaughtException', (err) => {
+  console.error('[uncaughtException]', err);
+  process.exit(1);
+});
+
 // Initialize Express app
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -72,14 +81,22 @@ app.get('*', (req, res) => {
   res.status(404).json({ error: 'Not found' });
 });
 
-// Initialize the scheduler
-schedulerService.initScheduler();
-
-// Start the server
-app.listen(PORT, () => {
-  console.log(`Server running on port ${PORT}`);
-  console.log(`Server API available at: http://localhost:${PORT}/api`);
-  console.log(`Frontend client available at: http://localhost:${PORT}`);
+// Express error-handling middleware
+app.use((err, req, res, next) => {
+  console.error('[express error]', err);
+  if (res.headersSent) return next(err);
+  res.status(500).json({ error: 'Internal server error' });
 });
 
-module.exports = app; 
+// Start the server after the scheduler has done its startup catch-up
+(async () => {
+  await schedulerService.initScheduler();
+
+  app.listen(PORT, () => {
+    console.log(`Server running on port ${PORT}`);
+    console.log(`Server API available at: http://localhost:${PORT}/api`);
+    console.log(`Frontend client available at: http://localhost:${PORT}`);
+  });
+})();
+
+module.exports = app;

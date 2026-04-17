@@ -1,59 +1,10 @@
 const axios = require('axios');
 const Setting = require('../models/Setting');
+const { sanitizeMessage, MAX_SMS_LENGTH } = require('../../shared/sanitize');
 
 const API_URL = 'https://smsapi.free-mobile.fr/sendmsg';
 const MAX_RETRIES = 5;
 const RETRY_DELAY_BASE = 2000; // 2 seconds base delay
-
-/**
- * Sanitize message content for Free Mobile API
- * Removes or replaces special characters that might cause issues
- * @param {string} message - Original message
- * @returns {string} Sanitized message
- */
-const sanitizeMessage = (message) => {
-  if (!message) return '';
-
-  // Map of accented characters to their ASCII equivalents
-  // Using Unicode escape sequences to avoid encoding issues
-  const accentMap = {
-    '\u00e0': 'a', '\u00e1': 'a', '\u00e2': 'a', '\u00e3': 'a', '\u00e4': 'a', '\u00e5': 'a', '\u00e6': 'ae',
-    '\u00e7': 'c',
-    '\u00e8': 'e', '\u00e9': 'e', '\u00ea': 'e', '\u00eb': 'e',
-    '\u00ec': 'i', '\u00ed': 'i', '\u00ee': 'i', '\u00ef': 'i',
-    '\u00f1': 'n',
-    '\u00f2': 'o', '\u00f3': 'o', '\u00f4': 'o', '\u00f5': 'o', '\u00f6': 'o', '\u00f8': 'o', '\u0153': 'oe',
-    '\u00f9': 'u', '\u00fa': 'u', '\u00fb': 'u', '\u00fc': 'u',
-    '\u00fd': 'y', '\u00ff': 'y',
-    '\u00c0': 'A', '\u00c1': 'A', '\u00c2': 'A', '\u00c3': 'A', '\u00c4': 'A', '\u00c5': 'A', '\u00c6': 'AE',
-    '\u00c7': 'C',
-    '\u00c8': 'E', '\u00c9': 'E', '\u00ca': 'E', '\u00cb': 'E',
-    '\u00cc': 'I', '\u00cd': 'I', '\u00ce': 'I', '\u00cf': 'I',
-    '\u00d1': 'N',
-    '\u00d2': 'O', '\u00d3': 'O', '\u00d4': 'O', '\u00d5': 'O', '\u00d6': 'O', '\u00d8': 'O', '\u0152': 'OE',
-    '\u00d9': 'U', '\u00da': 'U', '\u00db': 'U', '\u00dc': 'U',
-    '\u00dd': 'Y', '\u0178': 'Y',
-    // Special quotes and punctuation
-    '\u201c': '"', '\u201d': '"', '\u00ab': '"', '\u00bb': '"',
-    '\u2018': "'", '\u2019': "'", '\u0060': "'",
-    '\u2026': '...',
-    '\u2013': '-', '\u2014': '-',
-    '\u00A0': ' ', // Non-breaking space
-  };
-
-  let sanitized = message;
-
-  // Replace accented characters
-  for (const [accent, replacement] of Object.entries(accentMap)) {
-    sanitized = sanitized.split(accent).join(replacement);
-  }
-
-  // Remove any remaining non-ASCII characters that might cause issues
-  // Keep only printable ASCII characters (space to tilde)
-  sanitized = sanitized.replace(/[^\x20-\x7E\n\r]/g, '');
-
-  return sanitized.trim();
-};
 
 /**
  * Wait for a specified delay
@@ -71,6 +22,18 @@ const isRetryableError = (statusCode) => {
   // 402 - Rate limit (retryable after delay)
   // Network errors are also retryable
   return statusCode === 500 || statusCode === 402 || statusCode === 0;
+};
+
+/**
+ * Compute the next retry delay (ms) for a given failure.
+ * 402 (rate-limit) needs a much longer window than 500/network errors.
+ */
+const computeBackoffMs = (statusCode, retryCount) => {
+  if (statusCode === 402) {
+    return 60_000 + Math.floor(Math.random() * 60_000);
+  }
+  const jitter = Math.floor(Math.random() * 1000);
+  return RETRY_DELAY_BASE * Math.pow(2, retryCount) + jitter;
 };
 
 /**
@@ -127,6 +90,16 @@ const sendSMS = async (message, retryCount = 0) => {
       };
     }
 
+    if (sanitizedMessage.length > MAX_SMS_LENGTH) {
+      return {
+        success: false,
+        message: `Message exceeds ${MAX_SMS_LENGTH} characters after sanitization (${sanitizedMessage.length}). Shorten it before sending.`,
+        status: 400,
+        retryable: false,
+        retryCount: retryCount
+      };
+    }
+
     // Use GET request with URL-encoded parameters (more reliable with special chars)
     const params = new URLSearchParams({
       user: settings.userId,
@@ -166,9 +139,8 @@ const sendSMS = async (message, retryCount = 0) => {
     const canRetry = isRetryableError(statusCode) && retryCount < MAX_RETRIES;
 
     if (canRetry) {
-      // Calculate exponential backoff delay
-      const retryDelay = RETRY_DELAY_BASE * Math.pow(2, retryCount);
-      console.log(`SMS send failed (attempt ${retryCount + 1}/${MAX_RETRIES + 1}), retrying in ${retryDelay}ms...`);
+      const retryDelay = computeBackoffMs(statusCode, retryCount);
+      console.log(`SMS send failed (status ${statusCode}, attempt ${retryCount + 1}/${MAX_RETRIES + 1}), retrying in ${retryDelay}ms...`);
 
       await delay(retryDelay);
       return sendSMS(message, retryCount + 1);
@@ -211,6 +183,15 @@ const sendSMSOnce = async (message) => {
       return {
         success: false,
         message: 'Message is empty after sanitization',
+        status: 400,
+        retryable: false
+      };
+    }
+
+    if (sanitizedMessage.length > MAX_SMS_LENGTH) {
+      return {
+        success: false,
+        message: `Message exceeds ${MAX_SMS_LENGTH} characters after sanitization (${sanitizedMessage.length}).`,
         status: 400,
         retryable: false
       };
@@ -261,5 +242,7 @@ module.exports = {
   sendSMS,
   sendSMSOnce,
   sanitizeMessage,
+  isRetryableError,
+  computeBackoffMs,
   MAX_RETRIES
 };

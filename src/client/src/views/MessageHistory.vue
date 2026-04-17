@@ -262,6 +262,7 @@ export default {
     const fetchMessages = async () => {
       try {
         isLoading.value = true;
+        messages.value = [];
         const response = await axios.get('/api/messages');
         messages.value = response.data;
         currentPage.value = 1; // Reset to first page when fetching new data

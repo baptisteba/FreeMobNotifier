@@ -47,23 +47,35 @@
         
         <div class="form-group">
           <label for="message">Message</label>
-          <textarea 
-            id="message" 
-            v-model="message" 
-            class="form-control" 
-            placeholder="Votre message (max 160 caractères)" 
-            maxlength="160"
-            :class="{'is-invalid': messageError}"
+          <textarea
+            id="message"
+            v-model="message"
+            class="form-control"
+            placeholder="Votre message (max 160 caractères)"
+            maxlength="320"
+            :class="{'is-invalid': messageError || messageOverLimit}"
           ></textarea>
           <div v-if="messageError" class="error-message">{{ messageError }}</div>
-          <div class="char-count">{{ message.length }}/160</div>
+          <div class="char-count" :class="{'over-limit': messageOverLimit}">
+            {{ messageSanitized.length }}/160
+            <span v-if="message.length !== messageSanitized.length" class="char-count-raw">
+              (saisi : {{ message.length }})
+            </span>
+          </div>
+          <p class="char-note">SMS standard — 160 caractères. Les accents seront retirés à l'envoi.</p>
+          <p v-if="messageOverLimit" class="error-message">
+            Le message dépasse 160 caractères après conversion ASCII. Raccourcissez-le.
+          </p>
+          <p v-if="messageSanitizedDiffers && !messageOverLimit" class="sanitize-preview">
+            Envoi : <em>{{ messageSanitized }}</em>
+          </p>
         </div>
-        
+
         <div class="action-buttons">
           <button 
             class="btn-primary" 
             @click="sendMessage" 
-            :disabled="isSending || !message.trim()"
+            :disabled="isSending || !message.trim() || messageOverLimit"
           >
             <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="btn-icon">
               <line x1="22" y1="2" x2="11" y2="13"></line>
@@ -86,16 +98,28 @@
 
         <div class="form-group">
           <label for="schedule-message">Message</label>
-          <textarea 
-            id="schedule-message" 
-            v-model="scheduleMessage" 
-            class="form-control" 
-            placeholder="Votre message (max 160 caractères)" 
-            maxlength="160"
-            :class="{'is-invalid': scheduleMessageError}"
+          <textarea
+            id="schedule-message"
+            v-model="scheduleMessage"
+            class="form-control"
+            placeholder="Votre message (max 160 caractères)"
+            maxlength="320"
+            :class="{'is-invalid': scheduleMessageError || scheduleMessageOverLimit}"
           ></textarea>
           <div v-if="scheduleMessageError" class="error-message">{{ scheduleMessageError }}</div>
-          <div class="char-count">{{ scheduleMessage.length }}/160</div>
+          <div class="char-count" :class="{'over-limit': scheduleMessageOverLimit}">
+            {{ scheduleMessageSanitized.length }}/160
+            <span v-if="scheduleMessage.length !== scheduleMessageSanitized.length" class="char-count-raw">
+              (saisi : {{ scheduleMessage.length }})
+            </span>
+          </div>
+          <p class="char-note">SMS standard — 160 caractères. Les accents seront retirés à l'envoi.</p>
+          <p v-if="scheduleMessageOverLimit" class="error-message">
+            Le message dépasse 160 caractères après conversion ASCII. Raccourcissez-le.
+          </p>
+          <p v-if="scheduleMessageSanitizedDiffers && !scheduleMessageOverLimit" class="sanitize-preview">
+            Envoi : <em>{{ scheduleMessageSanitized }}</em>
+          </p>
         </div>
 
         <div class="form-row">
@@ -149,13 +173,15 @@
         <div v-if="recurrence === 'weekly'" class="form-group recurrence-options">
           <label>Jours de la semaine</label>
           <div class="days-select">
-            <button 
-              v-for="(day, index) in weekDays" 
+            <button
+              v-for="(day, index) in weekDays"
               :key="index"
               @click="toggleWeekDay(index)"
               :class="['day-btn', selectedDaysOfWeek.includes(index) ? 'active' : '']"
+              :aria-label="day"
+              :title="day"
             >
-              {{ day.substr(0, 1) }}
+              {{ day.substr(0, 2) }}
             </button>
           </div>
         </div>
@@ -169,7 +195,7 @@
         </div>
 
         <div class="action-buttons">
-          <button @click="scheduleMessageFunc" class="btn-primary" :disabled="isScheduling">
+          <button @click="scheduleMessageFunc" class="btn-primary" :disabled="isScheduling || scheduleMessageOverLimit || !scheduleMessage.trim()">
             <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="btn-icon">
               <circle cx="12" cy="12" r="10"></circle>
               <polyline points="12 6 12 12 16 14"></polyline>
@@ -196,6 +222,7 @@ import axios from 'axios';
 import FreeDateTimePicker from '../components/FreeDateTimePicker.vue';
 import CalendarIcon from '../components/icons/CalendarIcon.vue';
 import { useTheme } from '../composables/useTheme.js';
+import { sanitizeMessage, MAX_SMS_LENGTH } from '../utils/sanitize.js';
 
 export default {
   components: {
@@ -228,6 +255,21 @@ export default {
     // Global state
     const errorMessage = ref('');
     const successMessage = ref('');
+
+    // Preview of what the server will actually send (accents stripped).
+    // The SMS limit applies to the sanitized form: sanitization can expand
+    // (œ→oe, …→...) or shrink (emoji dropped), so the raw .length is
+    // misleading.
+    const messageSanitized = computed(() => sanitizeMessage(message.value));
+    const messageSanitizedDiffers = computed(() =>
+      message.value.trim() !== '' && messageSanitized.value !== message.value
+    );
+    const messageOverLimit = computed(() => messageSanitized.value.length > MAX_SMS_LENGTH);
+    const scheduleMessageSanitized = computed(() => sanitizeMessage(scheduleMessage.value));
+    const scheduleMessageSanitizedDiffers = computed(() =>
+      scheduleMessage.value.trim() !== '' && scheduleMessageSanitized.value !== scheduleMessage.value
+    );
+    const scheduleMessageOverLimit = computed(() => scheduleMessageSanitized.value.length > MAX_SMS_LENGTH);
     
     const weekDays = ['Dimanche', 'Lundi', 'Mardi', 'Mercredi', 'Jeudi', 'Vendredi', 'Samedi'];
     
@@ -284,7 +326,11 @@ export default {
         messageError.value = 'Le message est requis';
         return;
       }
-      
+      if (messageOverLimit.value) {
+        messageError.value = `Le message fait ${messageSanitized.value.length} caractères après conversion (max 160).`;
+        return;
+      }
+
       // Send request
       try {
         isSending.value = true;
@@ -321,6 +367,9 @@ export default {
       if (!scheduleMessage.value.trim()) {
         scheduleMessageError.value = 'Le message est requis';
         isValid = false;
+      } else if (scheduleMessageOverLimit.value) {
+        scheduleMessageError.value = `Le message fait ${scheduleMessageSanitized.value.length} caractères après conversion (max 160).`;
+        isValid = false;
       }
       
       if (!sendAt.value) {
@@ -352,6 +401,7 @@ export default {
         const dateObj = new Date(sendAt.value);
         recurrenceConfig.hour = dateObj.getHours();
         recurrenceConfig.minute = dateObj.getMinutes();
+        recurrenceConfig.timezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
       }
       
       // Prepare request data
@@ -404,6 +454,12 @@ export default {
       isScheduling,
       errorMessage,
       successMessage,
+      messageSanitized,
+      messageSanitizedDiffers,
+      messageOverLimit,
+      scheduleMessageSanitized,
+      scheduleMessageSanitizedDiffers,
+      scheduleMessageOverLimit,
       toggleWeekDay,
       setRecurrence,
       sendMessage,
@@ -577,6 +633,36 @@ textarea.form-control {
   font-size: 13px;
   color: var(--free-text-color-secondary);
   margin-top: 6px;
+}
+
+.char-count.over-limit {
+  color: var(--free-error-color);
+  font-weight: 600;
+}
+
+.char-count-raw {
+  font-size: 0.75rem;
+  color: var(--free-text-color-secondary);
+  font-weight: 400;
+  margin-left: 4px;
+}
+
+.char-note {
+  font-size: 0.75rem;
+  color: var(--free-text-color-secondary);
+  margin: 4px 0 0;
+  text-align: right;
+}
+
+.sanitize-preview {
+  font-size: 0.8rem;
+  color: var(--free-text-color-secondary);
+  margin: 4px 0 0;
+  padding: 6px 10px;
+  background: var(--free-background-color);
+  border-radius: 6px;
+  border: 1px dashed var(--free-border-color);
+  overflow-wrap: anywhere;
 }
 
 .toggle-group {

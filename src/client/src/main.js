@@ -5,6 +5,7 @@ import Home from './views/Home.vue';
 import Settings from './views/Settings.vue';
 import MessageHistory from './views/MessageHistory.vue';
 import ScheduledMessages from './views/ScheduledMessages.vue';
+import Today from './views/Today.vue';
 import { useTheme } from './composables/useTheme.js';
 
 // Import CSS
@@ -16,7 +17,9 @@ initializeTheme();
 
 // Create router
 const routes = [
-  { path: '/', component: Home },
+  { path: '/', redirect: '/today' },
+  { path: '/today', component: Today },
+  { path: '/compose', component: Home },
   { path: '/settings', component: Settings },
   { path: '/history', component: MessageHistory },
   { path: '/scheduled', component: ScheduledMessages }
@@ -110,14 +113,8 @@ if ('serviceWorker' in navigator) {
       });
       console.log('Service Worker registered successfully:', registration.scope);
 
-      // Check for updates immediately
+      // Check for updates immediately; further checks happen on visibilitychange.
       registration.update();
-
-      // Check for updates periodically (every 60 seconds when app is active)
-      setInterval(() => {
-        registration.update();
-        console.log('PWA: Checking for updates...');
-      }, 60000);
 
       // Handle service worker updates
       registration.addEventListener('updatefound', () => {
